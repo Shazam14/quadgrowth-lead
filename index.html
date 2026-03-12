@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuadGrowth — Sales Prep Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #2C3E6B;
+    --navy-dark: #111d33;
+    --cream: #F5F0E8;
+    --cream-dark: #EDE6D6;
+    --gold: #C8963E;
+    --gold-light: #E8B96A;
+    --green: #2D7A4F;
+    --green-light: #E8F5EE;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --text: #2C2C2C;
+    --muted: #777;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy-dark);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy-dark);
+    padding: 28px 48px 0;
+    border-bottom: 1px solid rgba(200,150,62,0.2);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--cream);
+  }
+
+  .logo span { color: var(--gold); }
+
+  .badge {
+    background: rgba(200,150,62,0.15);
+    border: 1px solid rgba(200,150,62,0.3);
+    color: var(--gold-light);
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .tab {
+    padding: 12px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: rgba(245,240,232,0.5);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.3px;
+  }
+
+  .tab:hover { color: var(--cream); }
+
+  .tab.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ── MAIN ── */
+  main { padding: 40px 48px; max-width: 1000px; margin: 0 auto; }
+
+  .section { display: none; animation: fadeIn 0.35s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .section-sub {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  /* ── CATEGORY FILTER ── */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .filter-btn {
+    padding: 7px 18px;
+    border-radius: 100px;
+    border: 1px solid rgba(245,240,232,0.15);
+    background: transparent;
+    color: rgba(245,240,232,0.6);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+  .filter-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy-dark);
+    font-weight: 600;
+  }
+
+  /* ── FLASHCARDS ── */
+  .qa-progress {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-size: 0.82rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .flashcard-wrapper {
+    perspective: 1200px;
+    margin-bottom: 24px;
+  }
+
+  .flashcard {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .flashcard.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    min-height: 220px;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-front {
+    background: var(--navy);
+    border: 1px solid rgba(200,150,62,0.2);
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #1a3a2a, #0f2518);
+    border: 1px solid rgba(45,122,79,0.3);
+    transform: rotateY(180deg);
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-front .card-label { color: var(--gold); }
+  .card-back .card-label { color: #6fcf97; }
+
+  .card-category {
+    display: inline-block;
+    background: rgba(200,150,62,0.15);
+    border: 1px solid rgba(200,150,62,0.25);
+    color: var(--gold-light);
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .card-back .card-category {
+    background: rgba(45,122,79,0.2);
+    border-color: rgba(45,122,79,0.3);
+    color: #6fcf97;
+  }
+
+  .card-question {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--cream);
+  }
+
+  .card-answer {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: rgba(245,240,232,0.9);
+    font-weight: 300;
+  }
+
+  .card-hint {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: rgba(245,240,232,0.35);
+    text-align: center;
+  }
+
+  .card-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .nav-btn {
+    padding: 12px 28px;
+    border-radius: 100px;
+    border: 1px solid rgba(245,240,232,0.15);
+    background: transparent;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .nav-btn.primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy-dark);
+    font-weight: 600;
+  }
+
+  .nav-btn.primary:hover { background: var(--gold-light); }
+
+  .flip-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  /* ── CHECKLIST ── */
+  .checklist-group { margin-bottom: 36px; }
+
+  .checklist-group-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(200,150,62,0.2);
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .checklist-item:hover { background: rgba(255,255,255,0.06); }
+
+  .checklist-item.done {
+    background: rgba(45,122,79,0.08);
+    border-color: rgba(45,122,79,0.2);
+  }
+
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid rgba(245,240,232,0.25);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-top: 1px;
+  }
+
+  .checklist-item.done .check-box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .check-mark {
+    font-size: 0.75rem;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .checklist-item.done .check-mark { opacity: 1; }
+
+  .check-content { flex: 1; }
+
+  .check-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 3px;
+    transition: all 0.2s ease;
+  }
+
+  .checklist-item.done .check-title {
+    color: rgba(245,240,232,0.45);
+    text-decoration: line-through;
+  }
+
+  .check-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .check-tag {
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 2px;
+    align-self: flex-start;
+  }
+
+  .tag-critical { background: rgba(192,57,43,0.15); color: #e07060; border: 1px solid rgba(192,57,43,0.25); }
+  .tag-important { background: rgba(200,150,62,0.15); color: var(--gold-light); border: 1px solid rgba(200,150,62,0.25); }
+  .tag-nice { background: rgba(45,122,79,0.15); color: #6fcf97; border: 1px solid rgba(45,122,79,0.25); }
+
+  .checklist-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.07);
+    margin-bottom: 32px;
+  }
+
+  .summary-stat { text-align: center; }
+  .summary-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--gold-light); display: block; line-height: 1; }
+  .summary-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.5px; }
+  .summary-div { width: 1px; height: 36px; background: rgba(255,255,255,0.1); }
+
+  .reset-btn {
+    margin-left: auto;
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .reset-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--cream); }
+
+  /* ── SCRIPTS ── */
+  .script-card {
+    background: var(--navy);
+    border: 1px solid rgba(245,240,232,0.08);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .script-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .script-header:hover { background: rgba(255,255,255,0.03); }
+
+  .script-header-left { display: flex; align-items: center; gap: 14px; }
+
+  .script-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(200,150,62,0.12);
+    border: 1px solid rgba(200,150,62,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .script-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--cream);
+    margin-bottom: 2px;
+  }
+
+  .script-desc { font-size: 0.8rem; color: var(--muted); }
+
+  .script-chevron {
+    font-size: 0.8rem;
+    color: var(--muted);
+    transition: transform 0.3s ease;
+  }
+
+  .script-card.open .script-chevron { transform: rotate(180deg); }
+
+  .script-body {
+    display: none;
+    padding: 0 28px 28px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .script-card.open .script-body { display: block; }
+
+  .script-step {
+    margin-top: 20px;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,150,62,0.2);
+  }
+
+  .script-text {
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.88);
+    font-style: italic;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .script-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: rgba(255,255,255,0.03);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+
+  .script-note strong { color: var(--gold-light); font-weight: 600; }
+
+  .objection-tag {
+    display: inline-block;
+    background: rgba(192,57,43,0.15);
+    border: 1px solid rgba(192,57,43,0.25);
+    color: #e07060;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    header { padding: 20px 20px 0; }
+    main { padding: 28px 20px; }
+    .tab { padding: 10px 16px; font-size: 0.82rem; }
+    .card-face { padding: 28px 24px; }
+  }
+
+  /* ── AUTH GATE ── */
+  #authGate {
+    position: fixed;
+    inset: 0;
+    background: var(--navy-dark);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .auth-box {
+    background: var(--navy);
+    border: 1px solid rgba(200,150,62,0.2);
+    border-radius: 24px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .auth-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .auth-logo span { color: var(--gold); }
+
+  .auth-sub {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 36px;
+    letter-spacing: 0.3px;
+  }
+
+  .auth-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .auth-input {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(245,240,232,0.15);
+    border-radius: 12px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .auth-input:focus { border-color: var(--gold); }
+  .auth-input::placeholder { letter-spacing: 1px; color: rgba(245,240,232,0.2); font-size: 0.85rem; }
+
+  .auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--gold);
+    border: none;
+    border-radius: 12px;
+    color: var(--navy-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+  }
+
+  .auth-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .auth-error {
+    font-size: 0.8rem;
+    color: #e07060;
+    min-height: 20px;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .auth-error.show { display: block; }
+
+  .auth-footer {
+    margin-top: 28px;
+    font-size: 0.72rem;
+    color: rgba(245,240,232,0.2);
+    letter-spacing: 0.3px;
+  }
+
+  #appContent { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH GATE ── -->
+<div id="authGate">
+  <div class="auth-box">
+    <div class="auth-logo">Quad<span>Growth</span></div>
+    <div class="auth-sub">Internal use only — team access required</div>
+    <label class="auth-label">Access Password</label>
+    <input
+      class="auth-input"
+      type="password"
+      id="authInput"
+      placeholder="Enter password"
+      onkeydown="if(event.key==='Enter') checkAuth()"
+      autocomplete="off"
+    />
+    <button class="auth-btn" onclick="checkAuth()">Unlock →</button>
+    <div class="auth-error" id="authError">Incorrect password. Try again.</div>
+    <div class="auth-footer">QuadGrowth · quadgrowth.com.au · Internal</div>
+  </div>
+</div>
+
+<!-- ── APP CONTENT (hidden until auth) ── -->
+<div id="appContent">
+
+<header>
+  <div class="header-top">
+    <div class="logo">Quad<span>Growth</span></div>
+    <div class="badge">Sales Prep Hub</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('qa')">💬 Q&A Flashcards</button>
+    <button class="tab" onclick="switchTab('checklist')">✅ Checklists</button>
+    <button class="tab" onclick="switchTab('scripts')">📞 Lead Gen Scripts</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB 1: Q&A FLASHCARDS                  -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="qa" class="section active">
+    <div class="section-title">Client Q&A Flashcards</div>
+    <div class="section-sub">Study the most common questions dental clinic owners will ask. Click a card to reveal the answer.</div>
+
+    <div class="filters" id="qaFilters">
+      <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+      <button class="filter-btn" onclick="filterCards('discovery', this)">Discovery Call</button>
+      <button class="filter-btn" onclick="filterCards('objection', this)">Objections</button>
+      <button class="filter-btn" onclick="filterCards('pricing', this)">Pricing</button>
+      <button class="filter-btn" onclick="filterCards('results', this)">Results & ROI</button>
+      <button class="filter-btn" onclick="filterCards('technical', this)">Technical</button>
+    </div>
+
+    <div class="qa-progress">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-text" id="progressText">Card 1 of <span id="totalCards">0</span></div>
+    </div>
+
+    <div class="flip-hint">👆 Click the card to reveal the answer</div>
+
+    <div class="flashcard-wrapper">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="card-face card-front">
+          <div class="card-label">Question</div>
+          <div class="card-category" id="cardCategory"></div>
+          <div class="card-question" id="cardQuestion"></div>
+          <div class="card-hint">Click to see the answer →</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-label">Answer</div>
+          <div class="card-category" id="cardCategoryBack"></div>
+          <div class="card-answer" id="cardAnswer"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-nav">
+      <button class="nav-btn" id="prevBtn" onclick="prevCard()">← Previous</button>
+      <button class="nav-btn" id="shuffleBtn" onclick="shuffleCards()">🔀 Shuffle</button>
+      <button class="nav-btn primary" id="nextBtn" onclick="nextCard()">Next →</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB 2: CHECKLISTS                      -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="checklist" class="section">
+    <div class="section-title">Operational Checklists</div>
+    <div class="section-sub">Track everything from pre-call prep to client onboarding and monthly delivery.</div>
+
+    <div class="checklist-summary">
+      <div class="summary-stat">
+        <span class="summary-num" id="doneCount">0</span>
+        <span class="summary-label">Completed</span>
+      </div>
+      <div class="summary-div"></div>
+      <div class="summary-stat">
+        <span class="summary-num" id="totalCount">0</span>
+        <span class="summary-label">Total Items</span>
+      </div>
+      <div class="summary-div"></div>
+      <div class="summary-stat">
+        <span class="summary-num" id="pctCount">0%</span>
+        <span class="summary-label">Progress</span>
+      </div>
+      <button class="reset-btn" onclick="resetChecklist()">↺ Reset All</button>
+    </div>
+
+    <div id="checklistContainer"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB 3: LEAD GEN SCRIPTS                -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="scripts" class="section">
+    <div class="section-title">Lead Gen Scripts & Templates</div>
+    <div class="section-sub">Ready-to-use email, phone, and follow-up scripts for reaching Melbourne dental clinics. Click any script to expand.</div>
+
+    <div id="scriptsContainer"></div>
+  </section>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+
+const QA_DATA = [
+  // DISCOVERY
+  { cat: "discovery", q: "What exactly does QuadGrowth do?", a: "We help dental clinics in Victoria attract more patients and fill their appointment books using AI-powered marketing. We combine local search optimisation, targeted digital advertising, and smart automation so your clinic shows up when patients in your area are searching for a dentist — and we make sure those patients actually book." },
+  { cat: "discovery", q: "How is this different from what we're already doing?", a: "Most dental marketing is generic — basic Facebook ads or a set-and-forget Google campaign. We're different in three ways: we use AI to identify exactly which patients in your suburb are looking for a dentist right now, we personalise every touchpoint to your specific clinic, and we track every dollar back to actual bookings — not just clicks or impressions." },
+  { cat: "discovery", q: "Why should we trust a new agency we've never heard of?", a: "That's a fair question. We're newer, which means you get more attention than you would from a large agency where you're just another account. What I can show you is exactly what we've built — our lead gen system, our process, and case studies from similar clinics. I'd rather prove it to you in the first 30 days than ask you to take it on faith." },
+  { cat: "discovery", q: "Who is your typical client?", a: "Dental clinics across Victoria — from Melbourne CBD and inner suburbs like Fitzroy and Richmond, out to regional centres like Geelong, Ballarat, and Bendigo. We specifically work with clinic owners who have capacity to take on new patients but aren't yet consistently full. Sound like you?" },
+  { cat: "discovery", q: "Do you work with other types of healthcare providers?", a: "Dental is our core focus to start, but QuadGrowth is built to serve all healthcare specialists — GPs, physios, chiropractors, cosmetic clinics. We're expanding as we grow. For now, dental clinics get our complete focus and the best results." },
+
+  // OBJECTIONS
+  { cat: "objection", q: "We've tried digital marketing before and it didn't work.", a: "I hear that a lot — and usually it comes down to one of three things: the targeting was too broad, the ads sent people to a generic website instead of a specific booking page, or there was no follow-up system. Can you tell me what you tried before? I'll be honest if I think the same thing will happen again, or I'll show you specifically what we'd do differently." },
+  { cat: "objection", q: "We get most of our patients through word of mouth — we don't need marketing.", a: "Word of mouth is fantastic — it means your existing patients love you. But it's unpredictable. You can't turn it up when you have empty slots in three weeks. What we do is essentially build a reliable second channel that runs in the background, so you're never waiting on referrals to fill your schedule." },
+  { cat: "objection", q: "We don't have time to deal with marketing on top of running the clinic.", a: "That's exactly why we handle everything. You get a monthly report and a brief catch-up call — that's all we ask of your time. The campaigns, the leads, the follow-ups — all managed by us. You just confirm the bookings when they come in." },
+  { cat: "objection", q: "We already have someone doing our social media.", a: "Social media and patient acquisition are actually quite different. Social keeps your existing patients engaged, which is great. We focus on new patient acquisition — finding people who don't know you yet but are actively searching for a dentist in your area. The two work well together." },
+  { cat: "objection", q: "Can you guarantee results?", a: "I won't make guarantees I can't keep — and any agency that promises you a specific number of patients before seeing your data is telling you what you want to hear. What I can commit to is full transparency — you'll see every campaign, every lead, every booking. And we have a 30-day out in our contract if you're not happy with the direction." },
+  { cat: "objection", q: "We're not sure this is the right time.", a: "The best time to build a patient pipeline is before you need it. Empty slots three months from now are hard to fill in three months' time — it takes time to build momentum. That said, I'd rather understand what's holding you back. Is it budget, bandwidth, or something else?" },
+
+  // PRICING
+  { cat: "pricing", q: "How much does this cost?", a: "Our packages start from AUD 1,500 per month for a core local search and lead gen setup. Most clinics we work with are on AUD 2,500–4,000/month once we add paid advertising. To put it in perspective — if we bring you just 3–4 new patients a month, and the average dental patient is worth AUD 800–1,200 per year, the service more than pays for itself." },
+  { cat: "pricing", q: "That's more than we expected. Can you do it cheaper?", a: "I understand. Let me ask — what's an empty appointment slot worth to your clinic? If it's AUD 300–500 per slot, and you have even 5–10 empty slots a week, that's real money leaving the building. Our pricing is set to be a fraction of that. But if budget is a genuine constraint, let's talk about what a smaller starting package looks like." },
+  { cat: "pricing", q: "Do you charge setup fees?", a: "We have a one-time onboarding and setup fee which covers building your campaign structure, your local search profile, and your lead tracking. I'll send you a full breakdown — no surprises." },
+  { cat: "pricing", q: "What's your contract length?", a: "We start with a 3-month minimum — that's the time it takes to build momentum, gather data, and start seeing consistent results. After that it's monthly rolling. We don't lock you into long contracts because we'd rather earn your renewal every month." },
+  { cat: "pricing", q: "What do we actually get for that monthly fee?", a: "Every month you get: new patient campaigns running across Google and social, local search optimisation, AI-powered lead targeting, a full performance dashboard, and a monthly strategy call with me. You'll know exactly where every dollar went and what it returned." },
+
+  // RESULTS
+  { cat: "results", q: "How long does it take to see results?", a: "Honest answer — you'll start seeing lead activity within the first 2 weeks. Actual new patients in the chair usually starts weeks 3–6, as people book ahead. Consistent, predictable flow typically comes at the 60–90 day mark. We'll show you the data the whole way." },
+  { cat: "results", q: "What kind of results have other clinics seen?", a: "Early clients have gone from around 60% appointment capacity to 90–95% within 6 weeks. Revenue increases of 30–40% in the first quarter are realistic for a clinic that has genuine capacity and a solid team. I'll share specific examples on our call." },
+  { cat: "results", q: "How do you measure success?", a: "We track three things that actually matter to you: number of new patient enquiries, number of bookings confirmed, and estimated revenue generated. Not impressions, not clicks — actual patients. Everything is in a live dashboard you can check anytime." },
+  { cat: "results", q: "What if we don't see results after the first month?", a: "One month isn't enough to judge — campaigns need data to optimise. But if by the end of month two you're seeing zero lead activity, we'll review everything together and if needed, restructure the approach at no extra charge. We stand behind our work." },
+
+  // TECHNICAL
+  { cat: "technical", q: "How does the AI part actually work?", a: "Our AI analyses search patterns in your suburb to identify people actively looking for a dentist — not just anyone online. It then serves them specific ads based on their intent, and personalises the message based on what we know about your clinic's strengths. It also automates follow-ups so leads don't fall through the cracks." },
+  { cat: "technical", q: "Do we need to do anything technical on our end?", a: "Very little. We'll need access to your Google Business Profile, and if you're running a practice management system like Dental4Windows or Exact, we can discuss integration. Otherwise, we handle everything technical — you just receive a login to the dashboard." },
+  { cat: "technical", q: "Is our patient data safe?", a: "Yes — we don't touch patient records at all. Our system works with anonymous intent data and public information. We're fully compliant with Australian Privacy Principles and the Spam Act 2003. We can provide our data handling policy in writing." },
+  { cat: "technical", q: "What platforms do you advertise on?", a: "Primarily Google Search and Google Maps — that's where patients actively searching for a dentist in your area are. We supplement with Meta (Facebook/Instagram) for awareness campaigns. The mix depends on your goals and suburb demographics." },
+];
+
+const CHECKLIST_DATA = [
+  {
+    group: "🔍 Before the Discovery Call",
+    items: [
+      { title: "Research the clinic online", sub: "Google their name, check their website, count their reviews, see their rating", tag: "critical" },
+      { title: "Check Meta Ad Library", sub: "Search clinic name at facebook.com/ads/library — are they running ads?", tag: "critical" },
+      { title: "Google 'dentist [suburb]'", sub: "See where they rank — do they appear? Are competitors above them?", tag: "critical" },
+      { title: "Note 2–3 specific gaps", sub: "Low reviews, no ads, outdated site, no booking widget — use these in the call", tag: "important" },
+      { title: "Prepare your intro (30 seconds)", sub: "Who you are, what QuadGrowth does, why you're calling them specifically", tag: "important" },
+      { title: "Have your Calendly link ready", sub: "For follow-up booking if they're interested", tag: "nice" },
+    ]
+  },
+  {
+    group: "📞 During the Discovery Call",
+    items: [
+      { title: "Ask about their current patient capacity", sub: "Are you generally full? How many empty slots per week on average?", tag: "critical" },
+      { title: "Ask what's working and what isn't", sub: "Don't pitch until you understand their situation", tag: "critical" },
+      { title: "Reference their specific gap", sub: "Use what you found in your research — makes the call feel personal", tag: "critical" },
+      { title: "Listen more than you talk", sub: "Aim for 60/40 — 60% them talking, 40% you", tag: "important" },
+      { title: "Confirm decision maker", sub: "Is the person you're speaking to the one who approves marketing spend?", tag: "important" },
+      { title: "Set a clear next step before hanging up", sub: "Either a follow-up call, a proposal, or a confirmed start date", tag: "critical" },
+    ]
+  },
+  {
+    group: "📋 First Client Onboarding",
+    items: [
+      { title: "Send and confirm signed contract", sub: "Use DocuSign or equivalent — don't start work without a signed agreement", tag: "critical" },
+      { title: "Confirm first payment received", sub: "First month's fee must be received before any work begins", tag: "critical" },
+      { title: "Get access to Google Business Profile", sub: "Request Manager access — not Ownership", tag: "critical" },
+      { title: "Complete onboarding questionnaire", sub: "Clinic name, services offered, target demographics, unique selling points", tag: "critical" },
+      { title: "Set up client Airtable CRM record", sub: "Log all contact details, contract value, start date, renewal date", tag: "important" },
+      { title: "Schedule kickoff call", sub: "30 minutes to align on goals, expectations, and communication cadence", tag: "important" },
+      { title: "Set up reporting dashboard", sub: "Client should have access to live campaign metrics from Day 1", tag: "important" },
+      { title: "Add client to Slack channel or comms thread", sub: "Agree on preferred communication method", tag: "nice" },
+    ]
+  },
+  {
+    group: "📅 Monthly Delivery Checklist",
+    items: [
+      { title: "Review campaign performance vs last month", sub: "Leads, bookings, CPL (cost per lead), and revenue generated", tag: "critical" },
+      { title: "Optimise top campaigns — pause underperformers", sub: "Reallocate budget based on what's working", tag: "critical" },
+      { title: "Send monthly report to client", sub: "Keep it simple: 3 wins, 1 challenge, next month's focus", tag: "critical" },
+      { title: "Hold monthly strategy call", sub: "30 minutes max — clients don't want long calls", tag: "important" },
+      { title: "Confirm invoice sent and payment received", sub: "Chase immediately if overdue — don't let it slide", tag: "critical" },
+      { title: "Check Google Business Profile for new reviews", sub: "Flag any negative reviews to the client immediately", tag: "important" },
+      { title: "Update Airtable with this month's metrics", sub: "Keep a running history — useful for retention and upsells", tag: "nice" },
+    ]
+  },
+  {
+    group: "🚀 Lead Gen Pipeline (Weekly)",
+    items: [
+      { title: "Run Outscraper pull for new clinics", sub: "Rotate suburbs — don't oversaturate the same area", tag: "important" },
+      { title: "Check n8n workflow ran successfully", sub: "Verify no errors in last 7 days of executions", tag: "critical" },
+      { title: "Review HOT leads in Airtable", sub: "Any with score 8+ that haven't been contacted yet?", tag: "critical" },
+      { title: "Check Instantly.ai campaign stats", sub: "Open rate, reply rate, bounce rate — flag anything unusual", tag: "important" },
+      { title: "Reply to any positive email responses within 24hrs", sub: "Speed of response is everything — book the call fast", tag: "critical" },
+      { title: "Update lead statuses in Airtable", sub: "Move leads through: New → Contacted → Replied → Call Booked → Closed", tag: "important" },
+    ]
+  },
+];
+
+const SCRIPTS_DATA = [
+  {
+    icon: "📧",
+    title: "Cold Email — First Touch",
+    desc: "Personalised first email to a dental clinic with identified digital gap",
+    steps: [
+      {
+        label: "Subject Line",
+        text: "[Clinic Name] — patients in [Suburb] are searching, but not finding you",
+        note: "<strong>Tip:</strong> Use their actual clinic name and suburb. Avoid 'Quick question' or 'Following up' — too generic."
+      },
+      {
+        label: "Opening",
+        text: "Hi [First Name],\n\nI came across [Clinic Name] while researching dental clinics in [Suburb] and noticed something worth flagging.",
+        note: "<strong>Tip:</strong> Never open with 'I hope this email finds you well.' Get straight to the point."
+      },
+      {
+        label: "The Gap (personalised)",
+        text: "When someone searches 'dentist in [Suburb]' right now, your competitors [Competitor 1] and [Competitor 2] appear in the top results — but [Clinic Name] doesn't. That gap means you're invisible to new patients who are actively looking.",
+        note: "<strong>Tip:</strong> This gap comes from your pre-call research. The more specific you are, the better the reply rate."
+      },
+      {
+        label: "The Offer",
+        text: "We've helped dental clinics across Melbourne go from 60% to 95% appointment capacity in 6 weeks using AI-driven local search and targeted patient campaigns. I'd love to show you what's possible for [Clinic Name] in a quick 20-minute call.",
+        note: "<strong>Tip:</strong> One specific result is more convincing than a list of features."
+      },
+      {
+        label: "CTA & Sign-off",
+        text: "Would Thursday or Friday this week work for you?\n\nJordan\nManaging Director, QuadGrowth\nquadgrowth.com.au\n\nTo unsubscribe from further emails, simply reply with 'unsubscribe'.",
+        note: "<strong>Spam Act:</strong> The unsubscribe line is legally required for commercial emails in Australia."
+      }
+    ]
+  },
+  {
+    icon: "🔁",
+    title: "Follow-Up Email — Day 4",
+    desc: "If no reply to first email, send this short follow-up",
+    steps: [
+      {
+        label: "Subject Line",
+        text: "Re: [Clinic Name] — just checking in",
+        note: "<strong>Tip:</strong> Reply to the original thread so it appears as a continuation."
+      },
+      {
+        label: "Body",
+        text: "Hi [First Name],\n\nJust wanted to bump this up in case it got buried.\n\nI noticed [specific gap — e.g. you have 18 Google reviews while the average Melbourne clinic your size has 60+]. That's a quick win we could address in the first 30 days.\n\nIf now isn't the right time, totally fine — just let me know and I won't follow up again. But if you do have 20 minutes this week, I think you'd find it valuable.\n\nJordan\nQuadGrowth",
+        note: "<strong>Tip:</strong> Short, low-pressure follow-ups outperform long ones. Give them an easy out — it actually increases replies."
+      }
+    ]
+  },
+  {
+    icon: "🔁",
+    title: "Follow-Up Email — Day 10",
+    desc: "Final follow-up — low pressure, leaves the door open",
+    steps: [
+      {
+        label: "Subject Line",
+        text: "Last note from me — [Clinic Name]",
+        note: "<strong>Tip:</strong> 'Last note' emails often get the highest reply rates because people feel the urgency."
+      },
+      {
+        label: "Body",
+        text: "Hi [First Name],\n\nI'll keep this brief — this is my last follow-up.\n\nIf growing your patient numbers isn't a priority right now, no worries at all. If it ever becomes one, feel free to reach out.\n\nOne last thought: if you Google 'dentist [suburb]' today, you'll see exactly what your potential patients see. Worth a look.\n\nAll the best,\nJordan\nQuadGrowth — quadgrowth.com.au",
+        note: "<strong>Tip:</strong> The Google challenge at the end plants a seed even if they don't reply now."
+      }
+    ]
+  },
+  {
+    icon: "📞",
+    title: "Cold Call Opening Script",
+    desc: "For calling clinic reception to reach the practice owner or principal dentist",
+    steps: [
+      {
+        label: "Getting Past Reception",
+        text: "Hi there, my name is Jordan — I'm calling from QuadGrowth. I've been researching dental clinics in [suburb] and I wanted to briefly speak with [Dr. Name / the practice owner] about something I found on their Google profile. Is he/she available for just two minutes?",
+        note: "<strong>Tip:</strong> Mention something specific ('their Google profile') — it sounds more purposeful than 'I'd like to discuss marketing'."
+      },
+      {
+        label: "When You Reach the Owner",
+        text: "Hi Dr. [Name], thanks for taking my call. My name is Jordan from QuadGrowth. I'll be quick — I was looking at dental clinics in [suburb] and noticed that when patients search 'dentist in [suburb]', your clinic isn't appearing in the top results, even though you've been established there for [X years]. I've helped clinics in similar situations go from invisible to fully booked within 6 weeks. Would you have 20 minutes this week to see if we can do the same for [Clinic Name]?",
+        note: "<strong>Tip:</strong> Respect their time — be fast, specific, and let them say yes or no quickly."
+      },
+      {
+        label: "If They Say 'We're not interested'",
+        text: "Totally understand — I appreciate you being straight with me. Can I ask — is it the timing, or is it something about the approach that doesn't fit? I'm always looking to improve how I reach out.",
+        note: "<strong>Tip:</strong> This is genuine curiosity, not manipulation. Sometimes they'll open up and give you useful intel — or change their mind."
+      },
+      {
+        label: "If They Say 'Send me something by email'",
+        text: "Absolutely. What's the best email to send it to? And just so I send you the right information — is new patient growth the main priority right now, or is there something else more pressing?",
+        note: "<strong>Tip:</strong> Always qualify before sending — it helps you personalise the follow-up email and shows you listened."
+      }
+    ]
+  },
+  {
+    icon: "🤝",
+    title: "Discovery Call Framework",
+    desc: "Structure for your first proper conversation with a warm or interested lead",
+    steps: [
+      {
+        label: "Open (2 min)",
+        text: "Thanks so much for making time, Dr. [Name]. I've done a bit of research on [Clinic Name] beforehand so I'm not going in blind — I know you're in [suburb] and you've been open [X years]. I'd love to spend the first half of this call understanding your situation, and the second half showing you what we might be able to do. Does that work?",
+        note: "<strong>Tip:</strong> Always confirm the agenda upfront. It shows professionalism and sets expectations."
+      },
+      {
+        label: "Diagnose (10 min — ask these questions)",
+        text: "1. How full is your appointment book on a typical week?\n2. Where do most of your current patients come from?\n3. What marketing have you tried before, and what happened?\n4. If you could wave a wand, what does growth look like for you in the next 12 months?\n5. What's your biggest frustration with getting new patients right now?",
+        note: "<strong>Tip:</strong> Don't rush this section. The more you understand their situation, the better your pitch will land."
+      },
+      {
+        label: "Present (8 min)",
+        text: "Based on what you've told me, here's what I'd focus on for [Clinic Name] specifically... [Reference their gap]. We'd start with [specific first action], then [second action]. Most clinics see the first results within 2–3 weeks.\n\nWould it be helpful if I put together a quick proposal specific to your situation?",
+        note: "<strong>Tip:</strong> Only present solutions relevant to what they told you. Generic pitches lose deals."
+      },
+      {
+        label: "Close / Next Step (3 min)",
+        text: "So where does this land for you? If it feels like a fit, I can have a proposal to you by [day]. If you need more time, no pressure — what would help you make a decision?",
+        note: "<strong>Tip:</strong> Always close on a specific next step. 'I'll be in touch' is not a next step."
+      }
+    ]
+  },
+  {
+    icon: "💌",
+    title: "Proposal Follow-Up Email",
+    desc: "After sending a proposal — following up if no response after 48 hours",
+    steps: [
+      {
+        label: "Subject Line",
+        text: "QuadGrowth proposal for [Clinic Name] — any questions?",
+        note: ""
+      },
+      {
+        label: "Body",
+        text: "Hi Dr. [Name],\n\nJust wanted to check you received the proposal I sent through. Happy to jump on a 10-minute call to walk you through it or answer any questions — sometimes it's easier than reading a document.\n\nI've also set aside a tentative start date of [Date] in case you'd like to move quickly, but there's no pressure.\n\nLet me know either way — I appreciate you considering us.\n\nJordan\nQuadGrowth",
+        note: "<strong>Tip:</strong> Mentioning a tentative start date creates subtle urgency without being pushy."
+      }
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+
+let currentCards = [...QA_DATA];
+let currentIndex = 0;
+let isFlipped = false;
+let activeFilter = 'all';
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+
+function switchTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════════════════
+
+function renderCard() {
+  const card = currentCards[currentIndex];
+  if (!card) return;
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+  isFlipped = false;
+  document.getElementById('cardCategory').textContent = formatCat(card.cat);
+  document.getElementById('cardCategoryBack').textContent = formatCat(card.cat);
+  document.getElementById('cardQuestion').textContent = card.q;
+  document.getElementById('cardAnswer').textContent = card.a;
+  document.getElementById('progressText').innerHTML = `Card ${currentIndex + 1} of <span id="totalCards">${currentCards.length}</span>`;
+  const pct = ((currentIndex + 1) / currentCards.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+  document.getElementById('nextBtn').disabled = currentIndex === currentCards.length - 1;
+}
+
+function formatCat(cat) {
+  const map = { discovery: 'Discovery Call', objection: 'Objection', pricing: 'Pricing', results: 'Results & ROI', technical: 'Technical' };
+  return map[cat] || cat;
+}
+
+function flipCard() {
+  const fc = document.getElementById('flashcard');
+  isFlipped = !isFlipped;
+  fc.classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  if (currentIndex < currentCards.length - 1) { currentIndex++; renderCard(); }
+}
+
+function prevCard() {
+  if (currentIndex > 0) { currentIndex--; renderCard(); }
+}
+
+function shuffleCards() {
+  for (let i = currentCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [currentCards[i], currentCards[j]] = [currentCards[j], currentCards[i]];
+  }
+  currentIndex = 0;
+  renderCard();
+}
+
+function filterCards(cat, btn) {
+  document.querySelectorAll('#qaFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = cat;
+  currentCards = cat === 'all' ? [...QA_DATA] : QA_DATA.filter(c => c.cat === cat);
+  currentIndex = 0;
+  renderCard();
+}
+
+// ═══════════════════════════════════════════════════
+// CHECKLIST
+// ═══════════════════════════════════════════════════
+
+let checkState = {};
+
+function buildChecklist() {
+  const container = document.getElementById('checklistContainer');
+  let html = '';
+  let totalItems = 0;
+  CHECKLIST_DATA.forEach((group, gi) => {
+    html += `<div class="checklist-group">
+      <div class="checklist-group-title">${group.group}</div>`;
+    group.items.forEach((item, ii) => {
+      const id = `check-${gi}-${ii}`;
+      totalItems++;
+      html += `<div class="checklist-item" id="${id}" onclick="toggleCheck('${id}')">
+        <div class="check-box"><span class="check-mark">✓</span></div>
+        <div class="check-content">
+          <div class="check-title">${item.title}</div>
+          <div class="check-sub">${item.sub}</div>
+        </div>
+        <span class="check-tag tag-${item.tag}">${item.tag}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+  document.getElementById('totalCount').textContent = totalItems;
+  updateCheckSummary();
+}
+
+function toggleCheck(id) {
+  checkState[id] = !checkState[id];
+  const el = document.getElementById(id);
+  el.classList.toggle('done', checkState[id]);
+  updateCheckSummary();
+}
+
+function updateCheckSummary() {
+  const done = Object.values(checkState).filter(Boolean).length;
+  const total = parseInt(document.getElementById('totalCount').textContent);
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('pctCount').textContent = total ? Math.round((done / total) * 100) + '%' : '0%';
+}
+
+function resetChecklist() {
+  checkState = {};
+  document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('done'));
+  updateCheckSummary();
+}
+
+// ═══════════════════════════════════════════════════
+// SCRIPTS
+// ═══════════════════════════════════════════════════
+
+function buildScripts() {
+  const container = document.getElementById('scriptsContainer');
+  let html = '';
+  SCRIPTS_DATA.forEach((script, si) => {
+    html += `<div class="script-card" id="script-${si}">
+      <div class="script-header" onclick="toggleScript(${si})">
+        <div class="script-header-left">
+          <div class="script-icon">${script.icon}</div>
+          <div>
+            <div class="script-title">${script.title}</div>
+            <div class="script-desc">${script.desc}</div>
+          </div>
+        </div>
+        <span class="script-chevron">▼</span>
+      </div>
+      <div class="script-body">`;
+    script.steps.forEach(step => {
+      html += `<div class="script-step">
+        <div class="step-label">${step.label}</div>
+        <div class="script-text">${step.text.replace(/\n/g, '<br>')}</div>
+        ${step.note ? `<div class="script-note">${step.note}</div>` : ''}
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function toggleScript(si) {
+  const card = document.getElementById(`script-${si}`);
+  card.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if already authenticated this session
+  if (sessionStorage.getItem('qg_auth') === 'true') {
+    unlockApp();
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+
+// ⚠️  CHANGE THIS PASSWORD before deploying
+const ACCESS_PASSWORD = 'quadgrowth2025';
+
+function checkAuth() {
+  const input = document.getElementById('authInput').value.trim();
+  const error = document.getElementById('authError');
+
+  if (input === ACCESS_PASSWORD) {
+    sessionStorage.setItem('qg_auth', 'true');
+    document.getElementById('authGate').style.animation = 'fadeOut 0.3s ease forwards';
+    setTimeout(() => {
+      unlockApp();
+      renderCard();
+      buildChecklist();
+      buildScripts();
+    }, 300);
+  } else {
+    error.classList.add('show');
+    document.getElementById('authInput').value = '';
+    document.getElementById('authInput').style.borderColor = '#e07060';
+    setTimeout(() => {
+      error.classList.remove('show');
+      document.getElementById('authInput').style.borderColor = '';
+    }, 2500);
+  }
+}
+
+function unlockApp() {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('appContent').style.display = 'block';
+}
+</script>
+
+<style>
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; pointer-events: none; }
+}
+</style>
+
+</div> <!-- end #appContent -->
+</body>
+</html>
