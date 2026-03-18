@@ -1050,7 +1050,7 @@
   <!-- ═══════════════════════════════════════ -->
   <section id="coach" class="section">
     <div class="section-title">AI Pitch Coach</div>
-    <div class="section-sub">Full voice roleplay with an AI clinic owner. Practice live — get scored and logged automatically.</div>
+    <div class="section-sub">Full voice roleplay with an AI clinic owner (Mistral). Your browser reads their lines aloud — practice live, get scored and logged.</div>
 
     <!-- Config Row -->
     <div class="coach-config">
@@ -1715,7 +1715,7 @@ function coachSetStatus(msg, state='') {
   el.innerHTML = msg;
 }
 
-function coachStartSession() {
+async function coachStartSession() {
   if (!coachHostedOnWeb() && !coachGetApiKey()) {
     alert('Pitch coach needs a Mistral API key when opened as a file.\n\nDevTools → Console:\nlocalStorage.setItem("coach_mistral_api_key", "YOUR_KEY");\nthen refresh.\n\nOn Vercel, add MISTRAL_API_KEY in project env — visitors need nothing.');
     return;
@@ -1739,8 +1739,8 @@ function coachStartSession() {
   coachAppendMsg('ai', opener);
   coach_transcript.push({ speaker: 'clinic_owner', text: opener });
 
-  coachSpeak(opener);
-  coachSetStatus('<strong>Clinic owner spoke.</strong><br>Tap the mic when ready to respond.', '');
+  coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
+  await coachSpeak(opener);
 }
 
 function coachReset() {
@@ -1851,31 +1851,37 @@ async function coachHandleUserSpeech(text) {
     thinkingBubble.textContent = reply;
     coach_chatHistory.push({ role: 'assistant', content: reply });
     coach_transcript.push({ speaker: 'clinic_owner', text: reply });
-    coachSpeak(reply);
     coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
+    await coachSpeak(reply);
   } catch(e) {
     thinkingBubble.textContent = e.message === 'no_local_key' ? 'Add API key (see Start Session tip).' : (e.message || 'API error.');
     coachSetStatus('<strong>Error.</strong> ' + (coachHostedOnWeb() ? 'Add MISTRAL_API_KEY in Vercel and redeploy.' : 'Check console.'), '');
   }
 }
 
-function coachSpeak(text) {
+/** Browser reads Mistral’s lines (no extra TTS API). */
+async function coachSpeak(text) {
   coachStopSpeaking();
-  coach_isSpeaking = true;
-  coach_currentUtterance = new SpeechSynthesisUtterance(text);
-  coach_currentUtterance.lang = 'en-AU';
-  coach_currentUtterance.rate = 0.96;
-  coach_currentUtterance.pitch = 1.0;
-  const voices = coach_synth.getVoices();
-  const auVoice = voices.find((v) => v.lang && v.lang.includes('en-AU')) || voices.find((v) => v.lang && v.lang.includes('en-GB')) || null;
-  if (auVoice) coach_currentUtterance.voice = auVoice;
-  coach_currentUtterance.onend = () => {
-    coach_isSpeaking = false;
-    if (coach_sessionActive) {
-      coachSetStatus('<strong>Clinic owner finished.</strong><br>Tap the mic to respond.', '');
-    }
-  };
-  coach_synth.speak(coach_currentUtterance);
+  const t = String(text || '').trim();
+  if (!t) return;
+  return new Promise((resolve) => {
+    coach_isSpeaking = true;
+    coach_currentUtterance = new SpeechSynthesisUtterance(t);
+    coach_currentUtterance.lang = 'en-AU';
+    coach_currentUtterance.rate = 0.96;
+    coach_currentUtterance.pitch = 1.0;
+    const voices = coach_synth.getVoices();
+    const auVoice = voices.find((v) => v.lang && v.lang.includes('en-AU')) || voices.find((v) => v.lang && v.lang.includes('en-GB')) || null;
+    if (auVoice) coach_currentUtterance.voice = auVoice;
+    coach_currentUtterance.onend = () => {
+      coach_isSpeaking = false;
+      if (coach_sessionActive) {
+        coachSetStatus('<strong>Clinic owner finished.</strong><br>Tap the mic to respond.', '');
+      }
+      resolve();
+    };
+    coach_synth.speak(coach_currentUtterance);
+  });
 }
 
 function coachStopSpeaking() {
