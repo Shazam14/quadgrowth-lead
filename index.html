@@ -558,6 +558,255 @@
     margin-bottom: 12px;
   }
 
+  /* ── AI PITCH COACH ── */
+  .coach-config {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .coach-field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .coach-field select, .coach-field input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(245,240,232,0.15);
+    border-radius: 10px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .coach-field select:focus, .coach-field input:focus { border-color: var(--gold); }
+  .coach-field select option { background: #1B2A4A; color: var(--cream); }
+  .coach-field.full { grid-column: 1 / -1; }
+
+  .coach-chat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(245,240,232,0.08);
+    border-radius: 20px;
+    min-height: 340px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+    scroll-behavior: smooth;
+  }
+  .coach-msg { display: flex; flex-direction: column; gap: 4px; max-width: 85%; }
+  .coach-msg.user { align-self: flex-end; align-items: flex-end; }
+  .coach-msg.ai { align-self: flex-start; align-items: flex-start; }
+  .coach-msg.system { align-self: center; align-items: center; max-width: 100%; }
+  .coach-msg-label { font-size: 0.7rem; color: var(--muted); font-weight: 500; letter-spacing: 0.5px; }
+  .coach-bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+  .coach-msg.user .coach-bubble {
+    background: var(--navy-light);
+    color: var(--cream);
+    border-radius: 16px 16px 4px 16px;
+    border: 1px solid rgba(200,150,62,0.2);
+  }
+  .coach-msg.ai .coach-bubble {
+    background: var(--navy);
+    color: var(--cream);
+    border-radius: 16px 16px 16px 4px;
+    border: 1px solid rgba(245,240,232,0.08);
+  }
+  .coach-msg.system .coach-bubble {
+    background: rgba(200,150,62,0.08);
+    color: var(--gold-light);
+    border: 1px solid rgba(200,150,62,0.15);
+    font-size: 0.82rem;
+    font-style: italic;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .speaking-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .speaking-indicator span {
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: speakPulse 1s infinite;
+  }
+  .speaking-indicator span:nth-child(2) { animation-delay: 0.2s; }
+  .speaking-indicator span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes speakPulse {
+    0%,100% { transform: scaleY(1); opacity:0.4; }
+    50% { transform: scaleY(2); opacity:1; }
+  }
+
+  .coach-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .coach-mic-btn {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(200,150,62,0.4);
+    background: rgba(200,150,62,0.08);
+    color: var(--gold);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .coach-mic-btn:hover { background: rgba(200,150,62,0.18); transform: scale(1.05); }
+  .coach-mic-btn.recording {
+    background: rgba(192,57,43,0.2);
+    border-color: #e07060;
+    color: #e07060;
+    animation: micPulse 1.5s infinite;
+  }
+  @keyframes micPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(192,57,43,0); }
+  }
+  .coach-mic-btn.disabled { opacity: 0.3; cursor: not-allowed; }
+  .coach-status {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .coach-status strong { color: var(--cream); font-weight: 500; }
+  .coach-status.listening { color: #e07060; }
+  .coach-status.speaking { color: var(--gold-light); }
+
+  .coach-action-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .coach-btn {
+    padding: 10px 22px;
+    border-radius: 100px;
+    border: 1px solid rgba(245,240,232,0.15);
+    background: transparent;
+    color: rgba(245,240,232,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .coach-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+  .coach-btn.primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy-dark);
+    font-weight: 600;
+  }
+  .coach-btn.primary:hover { background: var(--gold-light); }
+  .coach-btn.danger { border-color: rgba(192,57,43,0.4); color: #e07060; }
+  .coach-btn.danger:hover { background: rgba(192,57,43,0.1); }
+
+  .coach-scorecard {
+    background: var(--navy);
+    border: 1px solid rgba(200,150,62,0.2);
+    border-radius: 20px;
+    padding: 28px;
+    margin-top: 28px;
+    display: none;
+  }
+  .coach-scorecard.visible { display: block; animation: fadeIn 0.4s ease; }
+  .coach-scorecard-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .score-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .score-pill {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(245,240,232,0.1);
+    border-radius: 100px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+  .score-pill-label { color: var(--muted); }
+  .score-pill-val { font-weight: 600; font-size: 0.95rem; }
+  .score-pill-val.good { color: #6fcf97; }
+  .score-pill-val.mid { color: var(--gold-light); }
+  .score-pill-val.low { color: #e07060; }
+  .coach-feedback-block { margin-bottom: 16px; }
+  .coach-feedback-block h4 {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .coach-feedback-block ul {
+    list-style: none;
+    padding: 0;
+  }
+  .coach-feedback-block ul li {
+    font-size: 0.88rem;
+    color: rgba(245,240,232,0.8);
+    padding: 5px 0;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .coach-feedback-block ul li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+  .coach-rewrite {
+    background: rgba(200,150,62,0.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    font-style: italic;
+    color: rgba(245,240,232,0.9);
+    line-height: 1.7;
+    margin-top: 8px;
+  }
+  .webhook-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 100px;
+  }
+  .webhook-status.sent { background: rgba(45,122,79,0.15); color: #6fcf97; border: 1px solid rgba(45,122,79,0.3); }
+  .webhook-status.failed { background: rgba(192,57,43,0.15); color: #e07060; border: 1px solid rgba(192,57,43,0.3); }
+  .webhook-status.sending { background: rgba(200,150,62,0.1); color: var(--gold-light); border: 1px solid rgba(200,150,62,0.2); }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 640px) {
     header { padding: 20px 20px 0; }
@@ -706,6 +955,7 @@
     <button class="tab active" onclick="switchTab('qa')">💬 Q&A Flashcards</button>
     <button class="tab" onclick="switchTab('checklist')">✅ Checklists</button>
     <button class="tab" onclick="switchTab('scripts')">📞 Lead Gen Scripts</button>
+    <button class="tab" onclick="switchTab('coach')">🎙️ AI Pitch Coach</button>
   </div>
 </header>
 
@@ -793,6 +1043,76 @@
     <div class="section-sub">Ready-to-use email, phone, and follow-up scripts for reaching Melbourne dental clinics. Click any script to expand.</div>
 
     <div id="scriptsContainer"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB 4: AI PITCH COACH                  -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="coach" class="section">
+    <div class="section-title">AI Pitch Coach</div>
+    <div class="section-sub">Full voice roleplay with an AI clinic owner. Practice live — get scored and logged automatically.</div>
+
+    <!-- Config Row -->
+    <div class="coach-config">
+      <div class="coach-field">
+        <label>Scenario</label>
+        <select id="coachScenario">
+          <option value="cold-email">Cold email reply — curious but skeptical</option>
+          <option value="discovery">Discovery call — first real conversation</option>
+          <option value="objection">Objection — "too expensive / tried before"</option>
+          <option value="hot">Hot lead — already interested, needs convincing</option>
+        </select>
+      </div>
+      <div class="coach-field">
+        <label>Suburb / Context</label>
+        <select id="coachSuburb">
+          <option value="Richmond">Richmond</option>
+          <option value="Fitzroy">Fitzroy</option>
+          <option value="Southbank">Southbank</option>
+          <option value="Toorak">Toorak</option>
+          <option value="St Kilda">St Kilda</option>
+          <option value="Melbourne CBD">Melbourne CBD</option>
+          <option value="Geelong">Geelong</option>
+        </select>
+      </div>
+      <div class="coach-field full">
+        <label>n8n Webhook URL (for Slack + Google Sheets logging)</label>
+        <input type="text" id="coachWebhook" placeholder="https://your-n8n.com/webhook/quadgrowth-coach" />
+      </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="coach-chat" id="coachChat">
+      <div class="coach-msg system">
+        <div class="coach-bubble">Press Start Session to begin. The AI will play the clinic owner — you pitch out loud.</div>
+      </div>
+    </div>
+
+    <!-- Voice Controls -->
+    <div class="coach-controls">
+      <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()" title="Hold to speak">🎙️</button>
+      <div class="coach-status" id="coachStatus">
+        <strong>Ready when you are.</strong><br>Start a session, then tap the mic to speak your pitch.
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="coach-action-row">
+      <button class="coach-btn primary" onclick="coachStartSession()">▶ Start Session</button>
+      <button class="coach-btn" onclick="coachAssessSession()" id="coachAssessBtn" style="display:none">📊 Score this session</button>
+      <button class="coach-btn danger" onclick="coachEndSession()" id="coachEndBtn" style="display:none">■ End Session</button>
+      <button class="coach-btn" onclick="coachReset()">↺ Reset</button>
+    </div>
+
+    <!-- Scorecard (shown after assess) -->
+    <div class="coach-scorecard" id="coachScorecard">
+      <div class="coach-scorecard-title">
+        Session scorecard
+        <span class="webhook-status" id="coachWebhookStatus" style="display:none"></span>
+      </div>
+      <div class="score-pills" id="coachScorePills"></div>
+      <div id="coachFeedback"></div>
+    </div>
   </section>
 
 </main>
@@ -1222,7 +1542,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ═══════════════════════════════════════════════════
 
 // ⚠️  CHANGE THIS PASSWORD before deploying
-const ACCESS_PASSWORD = 'quadgrowth2025';
+const ACCESS_PASSWORD = 'quadgrowth2026';
 
 function checkAuth() {
   const input = document.getElementById('authInput').value.trim();
@@ -1251,6 +1571,377 @@ function checkAuth() {
 function unlockApp() {
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('appContent').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════
+// AI PITCH COACH — all vars prefixed coach_ to avoid conflicts
+// ═══════════════════════════════════════════════════
+
+/** API key must NOT be in source — set locally: localStorage.setItem('coach_claude_api_key', 'your-key'); then refresh */
+function coachGetApiKey() {
+  try {
+    return localStorage.getItem('coach_claude_api_key') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+const COACH_SCENE_DATA = {
+  'cold-email': {
+    opener: (suburb) => `"Thanks for reaching out about ${suburb} Dental. We're already pretty busy — why would we need this?"`,
+    system: (suburb) => `You are Dr. Mitchell, owner of ${suburb} Dental, a busy Melbourne dental clinic. You just received a cold email from QuadGrowth, an AI marketing agency. You replied and they called you. You are: cautious, protective of your time, skeptical of marketing agencies (you've been burned before), but quietly curious if they can actually fill empty slots. Respond naturally and briefly (2-4 sentences). Raise real objections. Reference ${suburb} specifically. After 4+ good exchanges where the rep shows genuine understanding, you may warm up and agree to a 20-min call. Never break character.`
+  },
+  'discovery': {
+    opener: (suburb) => `"Hi, I've got about 15 minutes. You said you help dental clinics in ${suburb}? We tried Google Ads last year — wasted $4k. Why is this different?"`,
+    system: (suburb) => `You are Dr. Chen, principal dentist at ${suburb} Dental Studio in Melbourne. You're on a discovery call. You're analytical, ask pointed questions, and need specific evidence before you'll consider anything. You have 3 part-time dentists, 60% appointment capacity, and your main frustration is no-show patients and weak new patient flow. Respond naturally (2-4 sentences). Push for specifics. If they explain the AI targeting and reactivation approach clearly, show real interest.`
+  },
+  'objection': {
+    opener: (suburb) => `"Look, I'm interested in the concept but $2,500 a month feels steep. And honestly I've heard the AI marketing pitch before — it never delivers. Convince me."`,
+    system: (suburb) => `You are Dr. Thompson, owner of ${suburb} Family Dental. You're interested but defensive about budget and past bad experiences. You need: a clear ROI case, proof it's not just another agency, and confidence they understand dental specifically. You have 8 empty appointment slots per week worth ~$400 each. If the rep does the maths clearly and addresses your trust concern directly, you'll agree to a trial proposal.`
+  },
+  'hot': {
+    opener: (suburb) => `"Hi, I saw your email and actually — this is pretty timely. We're expanding our ${suburb} practice next month and need more patients fast. What exactly do you do and how quickly can you start?"`,
+    system: (suburb) => `You are Dr. Park, owner of ${suburb} Smile Co. You're genuinely interested and expanding. You need: speed, clear onboarding process, realistic timelines, and to understand exactly what you're paying for. You'll push on: how fast results come, what you need to provide, whether it works for a new location, and contract terms. If the rep is organised and specific, you'll ask to book a formal proposal meeting.`
+  }
+};
+
+let coach_sessionActive = false;
+let coach_chatHistory = [];
+let coach_transcript = [];
+let coach_recognition = null;
+let coach_isListening = false;
+let coach_isSpeaking = false;
+let coach_synth = window.speechSynthesis;
+let coach_currentUtterance = null;
+
+function coachGetScenario() { return document.getElementById('coachScenario').value; }
+function coachGetSuburb() { return document.getElementById('coachSuburb').value; }
+
+function coachAppendMsg(role, text) {
+  const chat = document.getElementById('coachChat');
+  const div = document.createElement('div');
+  div.className = `coach-msg ${role}`;
+  const label = document.createElement('span');
+  label.className = 'coach-msg-label';
+  label.textContent = role === 'user' ? 'You (pitch)' : role === 'ai' ? `Dr. — ${coachGetSuburb()} Dental` : '';
+  const bubble = document.createElement('div');
+  bubble.className = 'coach-bubble';
+  bubble.textContent = text;
+  if (label.textContent) div.appendChild(label);
+  div.appendChild(bubble);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return bubble;
+}
+
+function coachSetStatus(msg, state='') {
+  const el = document.getElementById('coachStatus');
+  el.className = `coach-status ${state}`;
+  el.innerHTML = msg;
+}
+
+function coachStartSession() {
+  if (!coachGetApiKey()) {
+    alert('Pitch coach needs your Claude API key (never commit it).\n\n1. Open DevTools → Console\n2. Run:\n   localStorage.setItem("coach_claude_api_key", "YOUR_KEY_HERE");\n3. Refresh this page, then Start Session again.');
+    return;
+  }
+  coach_sessionActive = true;
+  coach_chatHistory = [];
+  coach_transcript = [];
+  const chat = document.getElementById('coachChat');
+  chat.innerHTML = '';
+  document.getElementById('coachScorecard').classList.remove('visible');
+  document.getElementById('coachAssessBtn').style.display = 'inline-block';
+  document.getElementById('coachEndBtn').style.display = 'inline-block';
+  document.getElementById('coachMicBtn').classList.remove('disabled');
+
+  const scenario = coachGetScenario();
+  const suburb = coachGetSuburb();
+  const opener = COACH_SCENE_DATA[scenario].opener(suburb);
+
+  coachAppendMsg('system', `Session started — ${document.getElementById('coachScenario').options[document.getElementById('coachScenario').selectedIndex].text}`);
+  coachAppendMsg('ai', opener);
+  coach_chatHistory.push({ role: 'assistant', content: opener });
+  coach_transcript.push({ speaker: 'clinic_owner', text: opener });
+
+  coachSpeak(opener);
+  coachSetStatus('<strong>Clinic owner spoke.</strong><br>Tap the mic when ready to respond.', '');
+}
+
+function coachReset() {
+  coachStopSpeaking();
+  if (coach_recognition) { try { coach_recognition.stop(); } catch(e){} }
+  coach_sessionActive = false;
+  coach_chatHistory = [];
+  coach_transcript = [];
+  coach_isListening = false;
+  document.getElementById('coachMicBtn').classList.remove('recording');
+  document.getElementById('coachMicBtn').classList.add('disabled');
+  document.getElementById('coachAssessBtn').style.display = 'none';
+  document.getElementById('coachEndBtn').style.display = 'none';
+  document.getElementById('coachScorecard').classList.remove('visible');
+  document.getElementById('coachChat').innerHTML = '<div class="coach-msg system"><div class="coach-bubble">Press Start Session to begin. The AI will play the clinic owner — you pitch out loud.</div></div>';
+  coachSetStatus('<strong>Ready when you are.</strong><br>Start a session, then tap the mic to speak your pitch.', '');
+}
+
+function coachEndSession() {
+  coachStopSpeaking();
+  if (coach_recognition) { try { coach_recognition.stop(); } catch(e){} }
+  coach_sessionActive = false;
+  document.getElementById('coachMicBtn').classList.add('disabled');
+  document.getElementById('coachMicBtn').classList.remove('recording');
+  coachSetStatus('<strong>Session ended.</strong><br>Click "Score this session" for your assessment.', '');
+  coachAppendMsg('system', 'Session ended. Click "Score this session" for your assessment.');
+}
+
+function coachToggleMic() {
+  if (!coach_sessionActive) return;
+  if (coach_isSpeaking) { coachStopSpeaking(); }
+  if (coach_isListening) {
+    coachStopListening();
+  } else {
+    coachStartListening();
+  }
+}
+
+function coachStartListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    coachSetStatus('Voice not supported in this browser. Use Chrome.', '');
+    return;
+  }
+  coach_recognition = new SpeechRecognition();
+  coach_recognition.lang = 'en-AU';
+  coach_recognition.continuous = false;
+  coach_recognition.interimResults = false;
+
+  coach_recognition.onstart = () => {
+    coach_isListening = true;
+    document.getElementById('coachMicBtn').classList.add('recording');
+    coachSetStatus('<strong style="color:#e07060">🔴 Listening...</strong><br>Speak your pitch. Tap mic again to stop.', 'listening');
+  };
+
+  coach_recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    coachHandleUserSpeech(text);
+  };
+
+  coach_recognition.onerror = (e) => {
+    coach_isListening = false;
+    document.getElementById('coachMicBtn').classList.remove('recording');
+    coachSetStatus(`<strong>Mic error:</strong> ${e.error}. Try again.`, '');
+  };
+
+  coach_recognition.onend = () => {
+    coach_isListening = false;
+    document.getElementById('coachMicBtn').classList.remove('recording');
+  };
+
+  coach_recognition.start();
+}
+
+function coachStopListening() {
+  if (coach_recognition) {
+    try { coach_recognition.stop(); } catch(e){}
+  }
+  coach_isListening = false;
+  document.getElementById('coachMicBtn').classList.remove('recording');
+}
+
+async function coachHandleUserSpeech(text) {
+  if (!text.trim()) return;
+  coachAppendMsg('user', text);
+  coach_chatHistory.push({ role: 'user', content: text });
+  coach_transcript.push({ speaker: 'rep', text });
+  coachSetStatus('<strong>Clinic owner is thinking...</strong>', 'speaking');
+
+  const scenario = coachGetScenario();
+  const suburb = coachGetSuburb();
+  const systemPrompt = COACH_SCENE_DATA[scenario].system(suburb);
+
+  const thinkingBubble = coachAppendMsg('ai', '');
+  thinkingBubble.innerHTML = '<span class="speaking-indicator"><span></span><span></span><span></span></span>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': coachGetApiKey(),
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: systemPrompt,
+        messages: coach_chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Could you repeat that?';
+    thinkingBubble.textContent = reply;
+    coach_chatHistory.push({ role: 'assistant', content: reply });
+    coach_transcript.push({ speaker: 'clinic_owner', text: reply });
+    coachSpeak(reply);
+    coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
+  } catch(e) {
+    thinkingBubble.textContent = 'API error — check your API key.';
+    coachSetStatus('<strong>Error.</strong> Check console.', '');
+  }
+}
+
+function coachSpeak(text) {
+  coachStopSpeaking();
+  coach_isSpeaking = true;
+  coach_currentUtterance = new SpeechSynthesisUtterance(text);
+  coach_currentUtterance.lang = 'en-AU';
+  coach_currentUtterance.rate = 0.95;
+  coach_currentUtterance.pitch = 1.0;
+  const voices = coach_synth.getVoices();
+  const auVoice = voices.find(v => v.lang.includes('en-AU')) || voices.find(v => v.lang.includes('en-GB')) || null;
+  if (auVoice) coach_currentUtterance.voice = auVoice;
+  coach_currentUtterance.onend = () => {
+    coach_isSpeaking = false;
+    if (coach_sessionActive) {
+      coachSetStatus('<strong>Clinic owner finished.</strong><br>Tap the mic to respond.', '');
+    }
+  };
+  coach_synth.speak(coach_currentUtterance);
+}
+
+function coachStopSpeaking() {
+  coach_synth.cancel();
+  coach_isSpeaking = false;
+}
+
+async function coachAssessSession() {
+  if (!coachGetApiKey()) {
+    alert('Set your API key in localStorage first (see Start Session instructions).');
+    return;
+  }
+  if (coach_transcript.length < 2) {
+    alert('Have at least one exchange before scoring.');
+    return;
+  }
+  coachSetStatus('<strong>Analysing your session...</strong>', 'speaking');
+
+  const transcriptText = coach_transcript.map(t =>
+    `${t.speaker === 'rep' ? 'REP' : 'CLINIC OWNER'}: ${t.text}`
+  ).join('\n');
+
+  const prompt = `You are a senior sales coach for QuadGrowth, an AI-powered dental marketing agency targeting Melbourne dental clinics.
+
+Assess this pitch practice session transcript. Return ONLY valid JSON, no markdown:
+
+{
+  "clarity": <0-10>,
+  "relevance": <0-10>,
+  "objection_handling": <0-10>,
+  "rapport": <0-10>,
+  "cta_strength": <0-10>,
+  "overall": <0-10>,
+  "strengths": ["...", "..."],
+  "improvements": ["...", "...", "..."],
+  "suggested_rewrite": "One improved line or response they could have used",
+  "summary": "2-sentence overall assessment"
+}
+
+TRANSCRIPT:
+${transcriptText}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': coachGetApiKey(),
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || '{}';
+    const scores = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    coachRenderScorecard(scores, transcriptText);
+    coachSendWebhook(scores, transcriptText);
+    coachSetStatus('<strong>Session scored.</strong><br>See your results below.', '');
+  } catch(e) {
+    coachSetStatus('<strong>Scoring failed.</strong> Check API key.', '');
+  }
+}
+
+function coachRenderScorecard(scores, transcript) {
+  const card = document.getElementById('coachScorecard');
+  card.classList.add('visible');
+
+  const fields = [
+    { key:'clarity', label:'Clarity' },
+    { key:'relevance', label:'Relevance' },
+    { key:'objection_handling', label:'Objections' },
+    { key:'rapport', label:'Rapport' },
+    { key:'cta_strength', label:'CTA' },
+    { key:'overall', label:'Overall' }
+  ];
+  document.getElementById('coachScorePills').innerHTML = fields.map(f => {
+    const v = scores[f.key] || 0;
+    const cls = v >= 8 ? 'good' : v >= 6 ? 'mid' : 'low';
+    return `<div class="score-pill"><span class="score-pill-label">${f.label}</span><span class="score-pill-val ${cls}">${v}/10</span></div>`;
+  }).join('');
+
+  document.getElementById('coachFeedback').innerHTML = `
+    ${scores.summary ? `<p style="font-size:0.88rem;color:rgba(245,240,232,0.75);margin-bottom:16px;font-style:italic;">"${scores.summary}"</p>` : ''}
+    ${scores.strengths?.length ? `<div class="coach-feedback-block"><h4>What worked</h4><ul>${scores.strengths.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}
+    ${scores.improvements?.length ? `<div class="coach-feedback-block"><h4>To improve</h4><ul>${scores.improvements.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}
+    ${scores.suggested_rewrite ? `<div class="coach-feedback-block"><h4>Try this instead</h4><div class="coach-rewrite">"${scores.suggested_rewrite}"</div></div>` : ''}
+  `;
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function coachSendWebhook(scores, transcript) {
+  const webhookUrl = document.getElementById('coachWebhook').value.trim();
+  if (!webhookUrl || webhookUrl.includes('your-n8n')) return;
+
+  const statusEl = document.getElementById('coachWebhookStatus');
+  statusEl.style.display = 'inline-flex';
+  statusEl.className = 'webhook-status sending';
+  statusEl.textContent = '⏳ Logging...';
+
+  const payload = {
+    source: 'QuadGrowth Pitch Coach',
+    timestamp: new Date().toISOString(),
+    scenario: document.getElementById('coachScenario').options[document.getElementById('coachScenario').selectedIndex].text,
+    suburb: coachGetSuburb(),
+    scores: {
+      clarity: scores.clarity,
+      relevance: scores.relevance,
+      objection_handling: scores.objection_handling,
+      rapport: scores.rapport,
+      cta_strength: scores.cta_strength,
+      overall: scores.overall
+    },
+    summary: scores.summary || '',
+    strengths: (scores.strengths || []).join(' | '),
+    improvements: (scores.improvements || []).join(' | '),
+    suggested_rewrite: scores.suggested_rewrite || '',
+    transcript_excerpt: transcript.slice(0, 1500)
+  };
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    statusEl.className = 'webhook-status sent';
+    statusEl.textContent = '✓ Logged to Sheets + Slack';
+  } catch(e) {
+    statusEl.className = 'webhook-status failed';
+    statusEl.textContent = '✗ Webhook failed';
+  }
 }
 </script>
 
