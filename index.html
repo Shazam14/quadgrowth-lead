@@ -1592,6 +1592,16 @@ function coachGetApiKey() {
     return '';
   }
 }
+function coachExtractClaudeText(data) {
+  const blocks = data && data.content;
+  if (!Array.isArray(blocks)) return data?.error?.message || 'Could you repeat that?';
+  for (let i = 0; i < blocks.length; i++) {
+    const b = blocks[i];
+    if (b && b.type === 'text' && typeof b.text === 'string') return b.text;
+  }
+  return 'Could you repeat that?';
+}
+
 async function coachCallClaude(payload) {
   if (coachHostedOnWeb()) {
     const res = await fetch('/api/coach', {
@@ -1601,7 +1611,8 @@ async function coachCallClaude(payload) {
     });
     const data = await res.json();
     if (!res.ok) {
-      const msg = data.error || data.message || (typeof data === 'string' ? data : JSON.stringify(data));
+      const e = data.error;
+      const msg = (e && typeof e === 'object' && e.message) ? e.message : (typeof e === 'string' ? e : data.message) || JSON.stringify(data);
       throw new Error(msg || 'Coach API error');
     }
     return data;
@@ -1617,7 +1628,12 @@ async function coachCallClaude(payload) {
     },
     body: JSON.stringify(payload)
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) {
+    const e = data.error;
+    throw new Error((e && e.message) || JSON.stringify(data));
+  }
+  return data;
 }
 
 const COACH_SCENE_DATA = {
@@ -1640,7 +1656,8 @@ const COACH_SCENE_DATA = {
 };
 
 let coach_sessionActive = false;
-let coach_chatHistory = [];
+let coach_chatHistory = []; // API messages only: user, assistant, user, … (never lead with assistant — Anthropic requirement)
+let coach_sessionOpener = '';
 let coach_transcript = [];
 let coach_recognition = null;
 let coach_isListening = false;
@@ -1692,10 +1709,10 @@ function coachStartSession() {
   const scenario = coachGetScenario();
   const suburb = coachGetSuburb();
   const opener = COACH_SCENE_DATA[scenario].opener(suburb);
+  coach_sessionOpener = opener;
 
   coachAppendMsg('system', `Session started — ${document.getElementById('coachScenario').options[document.getElementById('coachScenario').selectedIndex].text}`);
   coachAppendMsg('ai', opener);
-  coach_chatHistory.push({ role: 'assistant', content: opener });
   coach_transcript.push({ speaker: 'clinic_owner', text: opener });
 
   coachSpeak(opener);
@@ -1707,6 +1724,7 @@ function coachReset() {
   if (coach_recognition) { try { coach_recognition.stop(); } catch(e){} }
   coach_sessionActive = false;
   coach_chatHistory = [];
+  coach_sessionOpener = '';
   coach_transcript = [];
   coach_isListening = false;
   document.getElementById('coachMicBtn').classList.remove('recording');
@@ -1791,7 +1809,10 @@ async function coachHandleUserSpeech(text) {
 
   const scenario = coachGetScenario();
   const suburb = coachGetSuburb();
-  const systemPrompt = COACH_SCENE_DATA[scenario].system(suburb);
+  let systemPrompt = COACH_SCENE_DATA[scenario].system(suburb);
+  if (coach_chatHistory.length === 1) {
+    systemPrompt += `\n\nYou already opened the conversation with this line (the rep heard it): ${coach_sessionOpener}\nThey are replying now. Respond in character to what they said — do not repeat the full opener unless it fits naturally.`;
+  }
 
   const thinkingBubble = coachAppendMsg('ai', '');
   thinkingBubble.innerHTML = '<span class="speaking-indicator"><span></span><span></span><span></span></span>';
@@ -1803,7 +1824,7 @@ async function coachHandleUserSpeech(text) {
       system: systemPrompt,
       messages: coach_chatHistory
     });
-    const reply = data.content?.[0]?.text || data.error?.message || 'Could you repeat that?';
+    const reply = coachExtractClaudeText(data);
     thinkingBubble.textContent = reply;
     coach_chatHistory.push({ role: 'assistant', content: reply });
     coach_transcript.push({ speaker: 'clinic_owner', text: reply });
@@ -1880,7 +1901,7 @@ ${transcriptText}`;
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     });
-    const raw = data.content?.[0]?.text || '{}';
+    const raw = coachExtractClaudeText(data) || '{}';
     const scores = JSON.parse(raw.replace(/```json|```/g, '').trim());
     coachRenderScorecard(scores, transcriptText);
     coachSendWebhook(scores, transcriptText);
