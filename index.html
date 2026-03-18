@@ -1076,8 +1076,8 @@
         </select>
       </div>
       <div class="coach-field full">
-        <label>n8n Webhook URL (for Slack + Google Sheets logging)</label>
-        <input type="text" id="coachWebhook" placeholder="https://your-n8n.com/webhook/quadgrowth-coach" />
+        <label>Optional webhook override (local file only — on Vercel use <code style="font-size:0.75rem">N8N_COACH_WEBHOOK_URL</code> env)</label>
+        <input type="text" id="coachWebhook" placeholder="Leave empty on live site; paste URL here only when testing from disk" />
       </div>
     </div>
 
@@ -1918,13 +1918,9 @@ function coachRenderScorecard(scores, transcript) {
 }
 
 async function coachSendWebhook(scores, transcript) {
-  const webhookUrl = document.getElementById('coachWebhook').value.trim();
-  if (!webhookUrl || webhookUrl.includes('your-n8n')) return;
-
   const statusEl = document.getElementById('coachWebhookStatus');
-  statusEl.style.display = 'inline-flex';
-  statusEl.className = 'webhook-status sending';
-  statusEl.textContent = '⏳ Logging...';
+  const manualUrl = document.getElementById('coachWebhook').value.trim();
+  const useManual = manualUrl.length > 8 && manualUrl.startsWith('http');
 
   const payload = {
     source: 'QuadGrowth Pitch Coach',
@@ -1946,17 +1942,57 @@ async function coachSendWebhook(scores, transcript) {
     transcript_excerpt: transcript.slice(0, 1500)
   };
 
+  function showSending() {
+    statusEl.style.display = 'inline-flex';
+    statusEl.className = 'webhook-status sending';
+    statusEl.textContent = '⏳ Logging...';
+  }
+  function showSent() {
+    statusEl.className = 'webhook-status sent';
+    statusEl.textContent = '✓ Logged to Sheets + Slack';
+    statusEl.style.display = 'inline-flex';
+  }
+  function showFail() {
+    statusEl.className = 'webhook-status failed';
+    statusEl.textContent = '✗ Webhook failed';
+    statusEl.style.display = 'inline-flex';
+  }
+
+  if (coachHostedOnWeb()) {
+    try {
+      const res = await fetch('/api/log-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        showSent();
+        return;
+      }
+      if (res.status === 503 && useManual) {
+        /* fall through to direct POST below */
+      } else if (res.status === 503) {
+        return;
+      } else {
+        if (useManual) { /* fall through */ } else { showSending(); showFail(); return; }
+      }
+    } catch (e) {
+      if (!useManual) return;
+    }
+  }
+
+  if (!useManual) return;
+
+  showSending();
   try {
-    await fetch(webhookUrl, {
+    await fetch(manualUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    statusEl.className = 'webhook-status sent';
-    statusEl.textContent = '✓ Logged to Sheets + Slack';
-  } catch(e) {
-    statusEl.className = 'webhook-status failed';
-    statusEl.textContent = '✗ Webhook failed';
+    showSent();
+  } catch (e) {
+    showFail();
   }
 }
 </script>
