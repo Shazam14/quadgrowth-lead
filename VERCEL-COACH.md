@@ -1,11 +1,11 @@
-# Pitch coach on Vercel (no API key for visitors)
+# Pitch coach on Vercel (Mistral — no API key for visitors)
 
 1. **Vercel** → your project → **Settings** → **Environment Variables**
-2. **`ANTHROPIC_API_KEY`** — your key from [Anthropic Console](https://console.anthropic.com/) (pitch coach AI).
-3. **`N8N_COACH_WEBHOOK_URL`** — your n8n webhook (e.g. `https://….app.n8n.cloud/webhook/quadgrowth-coach`) so scorecards log to Slack/Sheets **without** exposing the URL in the page.
-4. Apply to **Production** (and Preview if you want).
-5. **Redeploy** so serverless functions see the new variables.
+2. **`MISTRAL_API_KEY`** — from [La Plateforme / Mistral](https://console.mistral.ai/) (pitch coach AI).
+3. Optional **`MISTRAL_MODEL`** — defaults to `mistral-small-latest`. Try `mistral-large-latest` for heavier dialogue (costs more).
+4. **`N8N_COACH_WEBHOOK_URL`** — n8n webhook for scorecard logging (Slack/Sheets).
+5. **Redeploy** after changing env vars.
 
-**Do not** put the real key in `.env` in Git — use Vercel’s UI only (or `.env.local` on your machine for `vercel dev`).
+Remove old **`ANTHROPIC_API_KEY`** from Vercel if you no longer use it.
 
-Local preview with functions: `npx vercel dev` and copy `.env.example` → `.env.local` with your key.
+Local: `npx vercel dev` with `.env.local` from `.env.example`.

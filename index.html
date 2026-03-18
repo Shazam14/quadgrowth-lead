@@ -1587,51 +1587,72 @@ function coachHostedOnWeb() {
 }
 function coachGetApiKey() {
   try {
-    return localStorage.getItem('coach_claude_api_key') || '';
+    return localStorage.getItem('coach_mistral_api_key') || localStorage.getItem('coach_claude_api_key') || '';
   } catch (e) {
     return '';
   }
 }
-function coachExtractClaudeText(data) {
+function coachExtractReplyText(data) {
+  const direct = data?.choices?.[0]?.message?.content;
+  if (typeof direct === 'string' && direct.length) return direct;
   const blocks = data && data.content;
-  if (!Array.isArray(blocks)) return data?.error?.message || 'Could you repeat that?';
-  for (let i = 0; i < blocks.length; i++) {
-    const b = blocks[i];
-    if (b && b.type === 'text' && typeof b.text === 'string') return b.text;
+  if (Array.isArray(blocks)) {
+    for (let i = 0; i < blocks.length; i++) {
+      const b = blocks[i];
+      if (b && b.type === 'text' && typeof b.text === 'string') return b.text;
+    }
   }
-  return 'Could you repeat that?';
+  return data?.error?.message || 'Could you repeat that?';
 }
 
-async function coachCallClaude(payload) {
+async function coachCallMistral(payload) {
+  const { system, messages, max_tokens } = payload;
   if (coachHostedOnWeb()) {
     const res = await fetch('/api/coach', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ system, messages, max_tokens })
     });
     const data = await res.json();
     if (!res.ok) {
       const e = data.error;
-      const msg = (e && typeof e === 'object' && e.message) ? e.message : (typeof e === 'string' ? e : data.message) || JSON.stringify(data);
+      const msg =
+        typeof e === 'string'
+          ? e
+          : (e && typeof e === 'object' && e.message)
+            ? e.message
+            : data.message || JSON.stringify(data);
       throw new Error(msg || 'Coach API error');
     }
     return data;
   }
   const key = coachGetApiKey();
   if (!key) throw new Error('no_local_key');
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const mistralMessages = [];
+  if (system && String(system).trim()) mistralMessages.push({ role: 'system', content: String(system) });
+  (messages || []).forEach((m) => {
+    if (m && (m.role === 'user' || m.role === 'assistant')) mistralMessages.push({ role: m.role, content: String(m.content) });
+  });
+  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01'
+      Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({
+      model: 'mistral-small-latest',
+      messages: mistralMessages,
+      max_tokens: Math.min(Number(max_tokens) || 512, 4096)
+    })
   });
   const data = await res.json();
   if (!res.ok) {
-    const e = data.error;
-    throw new Error((e && e.message) || JSON.stringify(data));
+    const msg =
+      data.message ||
+      (Array.isArray(data.detail) && data.detail[0]?.msg) ||
+      (typeof data.detail === 'string' ? data.detail : null) ||
+      JSON.stringify(data);
+    throw new Error(msg);
   }
   return data;
 }
@@ -1642,12 +1663,12 @@ const COACH_SCENE_DATA = {
     system: (suburb) => `You are Dr. Mitchell, owner of ${suburb} Dental, a busy Melbourne dental clinic. You just received a cold email from QuadGrowth, an AI marketing agency. You replied and they called you. You are: cautious, protective of your time, skeptical of marketing agencies (you've been burned before), but quietly curious if they can actually fill empty slots. Respond naturally and briefly (2-4 sentences). Raise real objections. Reference ${suburb} specifically. After 4+ good exchanges where the rep shows genuine understanding, you may warm up and agree to a 20-min call. Never break character.`
   },
   'discovery': {
-    opener: (suburb) => `"Hi, I've got about 15 minutes. You said you help dental clinics in ${suburb}? We tried Google Ads last year — wasted $4k. Why is this different?"`,
+    opener: (suburb) => `"Hi, I've got about 15 minutes. You said you help dental clinics in ${suburb}? We tried Google Ads last year — wasted about four grand. Why is this different?"`,
     system: (suburb) => `You are Dr. Chen, principal dentist at ${suburb} Dental Studio in Melbourne. You're on a discovery call. You're analytical, ask pointed questions, and need specific evidence before you'll consider anything. You have 3 part-time dentists, 60% appointment capacity, and your main frustration is no-show patients and weak new patient flow. Respond naturally (2-4 sentences). Push for specifics. If they explain the AI targeting and reactivation approach clearly, show real interest.`
   },
   'objection': {
-    opener: (suburb) => `"Look, I'm interested in the concept but $2,500 a month feels steep. And honestly I've heard the AI marketing pitch before — it never delivers. Convince me."`,
-    system: (suburb) => `You are Dr. Thompson, owner of ${suburb} Family Dental. You're interested but defensive about budget and past bad experiences. You need: a clear ROI case, proof it's not just another agency, and confidence they understand dental specifically. You have 8 empty appointment slots per week worth ~$400 each. If the rep does the maths clearly and addresses your trust concern directly, you'll agree to a trial proposal.`
+    opener: (suburb) => `"Look, I'm interested in the concept but two and a half thousand a month feels steep — that's in the ballpark of what you quoted. And honestly I've heard the AI marketing pitch before — it never delivers. Convince me."`,
+    system: (suburb) => `You are Dr. Thompson, owner of ${suburb} Family Dental. You're interested but defensive about budget and past bad experiences. You need: a clear ROI case, proof it's not just another agency, and confidence they understand dental specifically. You have 8 empty appointment slots per week worth roughly AUD 350–500 each. If the rep does the maths clearly in Australian dollars and addresses your trust concern directly, you'll agree to a trial proposal.`
   },
   'hot': {
     opener: (suburb) => `"Hi, I saw your email and actually — this is pretty timely. We're expanding our ${suburb} practice next month and need more patients fast. What exactly do you do and how quickly can you start?"`,
@@ -1656,7 +1677,7 @@ const COACH_SCENE_DATA = {
 };
 
 let coach_sessionActive = false;
-let coach_chatHistory = []; // API messages only: user, assistant, user, … (never lead with assistant — Anthropic requirement)
+let coach_chatHistory = []; // user → assistant → user … (Mistral chat format)
 let coach_sessionOpener = '';
 let coach_transcript = [];
 let coach_recognition = null;
@@ -1693,7 +1714,7 @@ function coachSetStatus(msg, state='') {
 
 function coachStartSession() {
   if (!coachHostedOnWeb() && !coachGetApiKey()) {
-    alert('Pitch coach needs a Claude API key.\n\nIf this page is opened as a file: use DevTools → Console:\nlocalStorage.setItem("coach_claude_api_key", "YOUR_KEY");\nthen refresh.\n\nOn your live Vercel site, the owner adds the key in Vercel settings — no setup for you.');
+    alert('Pitch coach needs a Mistral API key when opened as a file.\n\nDevTools → Console:\nlocalStorage.setItem("coach_mistral_api_key", "YOUR_KEY");\nthen refresh.\n\nOn Vercel, add MISTRAL_API_KEY in project env — visitors need nothing.');
     return;
   }
   coach_sessionActive = true;
@@ -1818,13 +1839,12 @@ async function coachHandleUserSpeech(text) {
   thinkingBubble.innerHTML = '<span class="speaking-indicator"><span></span><span></span><span></span></span>';
 
   try {
-    const data = await coachCallClaude({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
+    const data = await coachCallMistral({
+      max_tokens: 400,
       system: systemPrompt,
       messages: coach_chatHistory
     });
-    const reply = coachExtractClaudeText(data);
+    const reply = coachExtractReplyText(data);
     thinkingBubble.textContent = reply;
     coach_chatHistory.push({ role: 'assistant', content: reply });
     coach_transcript.push({ speaker: 'clinic_owner', text: reply });
@@ -1832,7 +1852,7 @@ async function coachHandleUserSpeech(text) {
     coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
   } catch(e) {
     thinkingBubble.textContent = e.message === 'no_local_key' ? 'Add API key (see Start Session tip).' : (e.message || 'API error.');
-    coachSetStatus('<strong>Error.</strong> ' + (coachHostedOnWeb() ? 'If you own this site, add ANTHROPIC_API_KEY in Vercel and redeploy.' : 'Check console.'), '');
+    coachSetStatus('<strong>Error.</strong> ' + (coachHostedOnWeb() ? 'Add MISTRAL_API_KEY in Vercel and redeploy.' : 'Check console.'), '');
   }
 }
 
@@ -1896,18 +1916,18 @@ TRANSCRIPT:
 ${transcriptText}`;
 
   try {
-    const data = await coachCallClaude({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
+    const data = await coachCallMistral({
+      max_tokens: 1500,
+      system: 'You reply with only valid JSON, no markdown or explanation.',
       messages: [{ role: 'user', content: prompt }]
     });
-    const raw = coachExtractClaudeText(data) || '{}';
+    const raw = coachExtractReplyText(data) || '{}';
     const scores = JSON.parse(raw.replace(/```json|```/g, '').trim());
     coachRenderScorecard(scores, transcriptText);
     coachSendWebhook(scores, transcriptText);
     coachSetStatus('<strong>Session scored.</strong><br>See your results below.', '');
   } catch(e) {
-    coachSetStatus('<strong>Scoring failed.</strong> Check API key.', '');
+    coachSetStatus('<strong>Scoring failed.</strong> Check MISTRAL_API_KEY on Vercel or local key.', '');
   }
 }
 
