@@ -1657,22 +1657,25 @@ async function coachCallMistral(payload) {
   return data;
 }
 
+/** How the AI clinic owner *writes* lines — less robotic, more like a real call */
+const COACH_AI_VOICE = `How you write your spoken lines (critical): You're on a live phone call — sound like a real person, not a brochure or LinkedIn post. Use contractions (I'm, we're, don't, that's). Mix short lines with longer ones; occasional "look", "I mean", "honestly" is fine. Show real attitude: scepticism, dry humour, impatience, or curiosity — never flat corporate neutral. No bullet points, no numbered lists, no stacked jargon. 2–4 sentences usually; sometimes one sharp sentence is enough. Australian-leaning, casual-professional.`;
+
 const COACH_SCENE_DATA = {
   'cold-email': {
     opener: (suburb) => `"Thanks for reaching out about ${suburb} Dental. We're already pretty busy — why would we need this?"`,
-    system: (suburb) => `You are Dr. Mitchell, owner of ${suburb} Dental, a busy Melbourne dental clinic. You just received a cold email from QuadGrowth, an AI marketing agency. You replied and they called you. You are: cautious, protective of your time, skeptical of marketing agencies (you've been burned before), but quietly curious if they can actually fill empty slots. Respond naturally and briefly (2-4 sentences). Raise real objections. Reference ${suburb} specifically. After 4+ good exchanges where the rep shows genuine understanding, you may warm up and agree to a 20-min call. Never break character.`
+    system: (suburb) => `You are Dr. Mitchell, owner of ${suburb} Dental, a busy Melbourne dental clinic. You just received a cold email from QuadGrowth, an AI marketing agency. You replied and they called you. You are: cautious, protective of your time, skeptical of marketing agencies (you've been burned before), but quietly curious if they can actually fill empty slots. Raise real objections. Reference ${suburb} specifically. After 4+ good exchanges where the rep shows genuine understanding, you may warm up and agree to a 20-min call. Never break character.`
   },
   'discovery': {
     opener: (suburb) => `"Hi, I've got about 15 minutes. You said you help dental clinics in ${suburb}? We tried Google Ads last year — wasted about four grand. Why is this different?"`,
-    system: (suburb) => `You are Dr. Chen, principal dentist at ${suburb} Dental Studio in Melbourne. You're on a discovery call. You're analytical, ask pointed questions, and need specific evidence before you'll consider anything. You have 3 part-time dentists, 60% appointment capacity, and your main frustration is no-show patients and weak new patient flow. Respond naturally (2-4 sentences). Push for specifics. If they explain the AI targeting and reactivation approach clearly, show real interest.`
+    system: (suburb) => `You are Dr. Chen, principal dentist at ${suburb} Dental Studio in Melbourne. You're on a discovery call. You're analytical, ask pointed questions, and need specific evidence before you'll consider anything. You have 3 part-time dentists, 60% appointment capacity, and your main frustration is no-show patients and weak new patient flow. Push for specifics. If they explain the AI targeting and reactivation approach clearly, show real interest.`
   },
   'objection': {
     opener: (suburb) => `"Look, I'm interested in the concept but two and a half thousand a month feels steep — that's in the ballpark of what you quoted. And honestly I've heard the AI marketing pitch before — it never delivers. Convince me."`,
-    system: (suburb) => `You are Dr. Thompson, owner of ${suburb} Family Dental. You're interested but defensive about budget and past bad experiences. You need: a clear ROI case, proof it's not just another agency, and confidence they understand dental specifically. You have 8 empty appointment slots per week worth roughly AUD 350–500 each. If the rep does the maths clearly in Australian dollars and addresses your trust concern directly, you'll agree to a trial proposal.`
+    system: (suburb) => `You are Dr. Thompson, owner of ${suburb} Family Dental. You're interested but defensive about budget and past bad experiences. You need a clear ROI case, proof it's not just another agency, and confidence they understand dental specifically. You have 8 empty appointment slots per week worth roughly AUD 350–500 each. If the rep does the maths clearly in Australian dollars and addresses your trust concern directly, you'll agree to a trial proposal.`
   },
   'hot': {
     opener: (suburb) => `"Hi, I saw your email and actually — this is pretty timely. We're expanding our ${suburb} practice next month and need more patients fast. What exactly do you do and how quickly can you start?"`,
-    system: (suburb) => `You are Dr. Park, owner of ${suburb} Smile Co. You're genuinely interested and expanding. You need: speed, clear onboarding process, realistic timelines, and to understand exactly what you're paying for. You'll push on: how fast results come, what you need to provide, whether it works for a new location, and contract terms. If the rep is organised and specific, you'll ask to book a formal proposal meeting.`
+    system: (suburb) => `You are Dr. Park, owner of ${suburb} Smile Co. You're genuinely interested and expanding. You care about speed, clear onboarding, realistic timelines, and knowing exactly what you're paying for. Push on how fast results come, what you need to provide, whether it works for a new location, and contract terms. If the rep is organised and specific, you'll ask to book a formal proposal meeting.`
   }
 };
 
@@ -1830,9 +1833,9 @@ async function coachHandleUserSpeech(text) {
 
   const scenario = coachGetScenario();
   const suburb = coachGetSuburb();
-  let systemPrompt = COACH_SCENE_DATA[scenario].system(suburb);
+  let systemPrompt = COACH_SCENE_DATA[scenario].system(suburb) + '\n\n' + COACH_AI_VOICE;
   if (coach_chatHistory.length === 1) {
-    systemPrompt += `\n\nYou already opened the conversation with this line (the rep heard it): ${coach_sessionOpener}\nThey are replying now. Respond in character to what they said — do not repeat the full opener unless it fits naturally.`;
+    systemPrompt += `\n\nYou already opened with (they heard it): ${coach_sessionOpener}\nThey're replying now — answer in character; don't repeat the whole opener unless it fits.`;
   }
 
   const thinkingBubble = coachAppendMsg('ai', '');
@@ -1861,10 +1864,10 @@ function coachSpeak(text) {
   coach_isSpeaking = true;
   coach_currentUtterance = new SpeechSynthesisUtterance(text);
   coach_currentUtterance.lang = 'en-AU';
-  coach_currentUtterance.rate = 0.95;
+  coach_currentUtterance.rate = 0.96;
   coach_currentUtterance.pitch = 1.0;
   const voices = coach_synth.getVoices();
-  const auVoice = voices.find(v => v.lang.includes('en-AU')) || voices.find(v => v.lang.includes('en-GB')) || null;
+  const auVoice = voices.find((v) => v.lang && v.lang.includes('en-AU')) || voices.find((v) => v.lang && v.lang.includes('en-GB')) || null;
   if (auVoice) coach_currentUtterance.voice = auVoice;
   coach_currentUtterance.onend = () => {
     coach_isSpeaking = false;
