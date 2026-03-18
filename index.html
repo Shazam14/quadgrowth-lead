@@ -657,8 +657,23 @@
   .coach-controls {
     display: flex;
     gap: 12px;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
+  }
+  .coach-mic-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .coach-voice-label {
+    font-size: 0.65rem;
+    color: rgba(245, 240, 232, 0.42);
+    max-width: 130px;
+    text-align: center;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
   }
   .coach-mic-btn {
     width: 56px; height: 56px;
@@ -1090,7 +1105,10 @@
 
     <!-- Voice Controls -->
     <div class="coach-controls">
-      <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()" title="Hold to speak">🎙️</button>
+      <div class="coach-mic-wrap">
+        <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()" title="Hold to speak">🎙️</button>
+        <div class="coach-voice-label" id="coachVoiceLabel" title="Best free AU/GB voice we found on this device">Clinic owner voice: …</div>
+      </div>
       <div class="coach-status" id="coachStatus">
         <strong>Ready when you are.</strong><br>Start a session, then tap the mic to speak your pitch.
       </div>
@@ -1859,6 +1877,51 @@ async function coachHandleUserSpeech(text) {
   }
 }
 
+/** Best free system voices: Mac Karen/Daniel → Windows Natasha/Libby/Sonia → Google AU/UK → en-AU → en-GB → en */
+function coachPickBestVoice(voices) {
+  if (!voices || !voices.length) return null;
+  const n = (s) => String(s || '').toLowerCase();
+  const rules = [
+    (v) => n(v.name).includes('karen') && n(v.lang).includes('au'),
+    (v) => n(v.name).includes('karen'),
+    (v) => n(v.name).includes('daniel'),
+    (v) => n(v.name).includes('natasha') && (n(v.name).includes('natural') || n(v.name).includes('online')),
+    (v) => n(v.name).includes('natasha'),
+    (v) => n(v.name).includes('libby'),
+    (v) => n(v.name).includes('sonia'),
+    (v) => n(v.name).includes('google') && n(v.lang).includes('au'),
+    (v) => n(v.name).includes('google') && n(v.name).includes('uk') && n(v.name).includes('female'),
+    (v) => n(v.name).includes('google uk english'),
+    (v) => n(v.lang).includes('en-au'),
+    (v) => n(v.lang).includes('en-gb'),
+    (v) => n(v.lang).startsWith('en'),
+  ];
+  for (const pred of rules) {
+    const found = voices.find(pred);
+    if (found) return found;
+  }
+  return voices[0];
+}
+
+function coachUpdateVoiceLabel() {
+  const el = document.getElementById('coachVoiceLabel');
+  if (!el || typeof speechSynthesis === 'undefined') return;
+  const voices = speechSynthesis.getVoices();
+  const v = coachPickBestVoice(voices);
+  if (v) {
+    el.textContent = 'Voice: ' + v.name + ' (' + (v.lang || '') + ')';
+  } else {
+    el.textContent = 'Voice: loading… (tap Start if stuck)';
+  }
+}
+
+function coachInitTtsVoicePreload() {
+  coachUpdateVoiceLabel();
+  if (typeof speechSynthesis !== 'undefined') {
+    speechSynthesis.onvoiceschanged = coachUpdateVoiceLabel;
+  }
+}
+
 /** Browser reads Mistral’s lines (no extra TTS API). */
 async function coachSpeak(text) {
   coachStopSpeaking();
@@ -1867,12 +1930,17 @@ async function coachSpeak(text) {
   return new Promise((resolve) => {
     coach_isSpeaking = true;
     coach_currentUtterance = new SpeechSynthesisUtterance(t);
-    coach_currentUtterance.lang = 'en-AU';
     coach_currentUtterance.rate = 0.96;
     coach_currentUtterance.pitch = 1.0;
     const voices = coach_synth.getVoices();
-    const auVoice = voices.find((v) => v.lang && v.lang.includes('en-AU')) || voices.find((v) => v.lang && v.lang.includes('en-GB')) || null;
-    if (auVoice) coach_currentUtterance.voice = auVoice;
+    const v = coachPickBestVoice(voices);
+    if (v) {
+      coach_currentUtterance.voice = v;
+      coach_currentUtterance.lang = v.lang || 'en-AU';
+      coachUpdateVoiceLabel();
+    } else {
+      coach_currentUtterance.lang = 'en-AU';
+    }
     coach_currentUtterance.onend = () => {
       coach_isSpeaking = false;
       if (coach_sessionActive) {
@@ -2044,6 +2112,12 @@ async function coachSendWebhook(scores, transcript) {
   } catch (e) {
     showFail();
   }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', coachInitTtsVoicePreload);
+} else {
+  coachInitTtsVoicePreload();
 }
 </script>
 
