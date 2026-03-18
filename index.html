@@ -1577,13 +1577,47 @@ function unlockApp() {
 // AI PITCH COACH — all vars prefixed coach_ to avoid conflicts
 // ═══════════════════════════════════════════════════
 
-/** API key must NOT be in source — set locally: localStorage.setItem('coach_claude_api_key', 'your-key'); then refresh */
+/** On Vercel, the key lives in server env — visitors need nothing. Opening as file:// still needs localStorage. */
+function coachHostedOnWeb() {
+  try {
+    return location.protocol === 'http:' || location.protocol === 'https:';
+  } catch (e) {
+    return false;
+  }
+}
 function coachGetApiKey() {
   try {
     return localStorage.getItem('coach_claude_api_key') || '';
   } catch (e) {
     return '';
   }
+}
+async function coachCallClaude(payload) {
+  if (coachHostedOnWeb()) {
+    const res = await fetch('/api/coach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data.error || data.message || (typeof data === 'string' ? data : JSON.stringify(data));
+      throw new Error(msg || 'Coach API error');
+    }
+    return data;
+  }
+  const key = coachGetApiKey();
+  if (!key) throw new Error('no_local_key');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify(payload)
+  });
+  return res.json();
 }
 
 const COACH_SCENE_DATA = {
@@ -1641,8 +1675,8 @@ function coachSetStatus(msg, state='') {
 }
 
 function coachStartSession() {
-  if (!coachGetApiKey()) {
-    alert('Pitch coach needs your Claude API key (never commit it).\n\n1. Open DevTools → Console\n2. Run:\n   localStorage.setItem("coach_claude_api_key", "YOUR_KEY_HERE");\n3. Refresh this page, then Start Session again.');
+  if (!coachHostedOnWeb() && !coachGetApiKey()) {
+    alert('Pitch coach needs a Claude API key.\n\nIf this page is opened as a file: use DevTools → Console:\nlocalStorage.setItem("coach_claude_api_key", "YOUR_KEY");\nthen refresh.\n\nOn your live Vercel site, the owner adds the key in Vercel settings — no setup for you.');
     return;
   }
   coach_sessionActive = true;
@@ -1763,30 +1797,21 @@ async function coachHandleUserSpeech(text) {
   thinkingBubble.innerHTML = '<span class="speaking-indicator"><span></span><span></span><span></span></span>';
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': coachGetApiKey(),
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        system: systemPrompt,
-        messages: coach_chatHistory
-      })
+    const data = await coachCallClaude({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 300,
+      system: systemPrompt,
+      messages: coach_chatHistory
     });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || 'Could you repeat that?';
+    const reply = data.content?.[0]?.text || data.error?.message || 'Could you repeat that?';
     thinkingBubble.textContent = reply;
     coach_chatHistory.push({ role: 'assistant', content: reply });
     coach_transcript.push({ speaker: 'clinic_owner', text: reply });
     coachSpeak(reply);
     coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
   } catch(e) {
-    thinkingBubble.textContent = 'API error — check your API key.';
-    coachSetStatus('<strong>Error.</strong> Check console.', '');
+    thinkingBubble.textContent = e.message === 'no_local_key' ? 'Add API key (see Start Session tip).' : (e.message || 'API error.');
+    coachSetStatus('<strong>Error.</strong> ' + (coachHostedOnWeb() ? 'If you own this site, add ANTHROPIC_API_KEY in Vercel and redeploy.' : 'Check console.'), '');
   }
 }
 
@@ -1815,7 +1840,7 @@ function coachStopSpeaking() {
 }
 
 async function coachAssessSession() {
-  if (!coachGetApiKey()) {
+  if (!coachHostedOnWeb() && !coachGetApiKey()) {
     alert('Set your API key in localStorage first (see Start Session instructions).');
     return;
   }
@@ -1850,20 +1875,11 @@ TRANSCRIPT:
 ${transcriptText}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': coachGetApiKey(),
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const data = await coachCallClaude({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
     });
-    const data = await res.json();
     const raw = data.content?.[0]?.text || '{}';
     const scores = JSON.parse(raw.replace(/```json|```/g, '').trim());
     coachRenderScorecard(scores, transcriptText);
