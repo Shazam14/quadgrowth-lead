@@ -657,23 +657,8 @@
   .coach-controls {
     display: flex;
     gap: 12px;
-    align-items: flex-start;
-    margin-bottom: 20px;
-  }
-  .coach-mic-wrap {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-  .coach-voice-label {
-    font-size: 0.65rem;
-    color: rgba(245, 240, 232, 0.42);
-    max-width: 130px;
-    text-align: center;
-    line-height: 1.35;
-    letter-spacing: 0.02em;
+    margin-bottom: 20px;
   }
   .coach-mic-btn {
     width: 56px; height: 56px;
@@ -821,6 +806,237 @@
   .webhook-status.sent { background: rgba(45,122,79,0.15); color: #6fcf97; border: 1px solid rgba(45,122,79,0.3); }
   .webhook-status.failed { background: rgba(192,57,43,0.15); color: #e07060; border: 1px solid rgba(192,57,43,0.3); }
   .webhook-status.sending { background: rgba(200,150,62,0.1); color: var(--gold-light); border: 1px solid rgba(200,150,62,0.2); }
+
+  /* ── REAL PERSONA CARDS ── */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .persona-card {
+    background: var(--navy);
+    border: 1px solid rgba(245,240,232,0.08);
+    border-radius: 20px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .persona-card:hover {
+    border-color: rgba(200,150,62,0.4);
+    transform: translateY(-3px);
+    background: var(--navy-light);
+  }
+  .persona-card.selected {
+    border-color: var(--gold);
+    border-width: 2px;
+  }
+  .persona-difficulty {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .persona-difficulty.hard { background: rgba(192,57,43,0.2); color: #e07060; border: 1px solid rgba(192,57,43,0.3); }
+  .persona-difficulty.medium { background: rgba(200,150,62,0.15); color: var(--gold-light); border: 1px solid rgba(200,150,62,0.25); }
+  .persona-difficulty.easy { background: rgba(45,122,79,0.15); color: #6fcf97; border: 1px solid rgba(45,122,79,0.25); }
+  .persona-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(200,150,62,0.15);
+    border: 2px solid rgba(200,150,62,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    margin-bottom: 14px;
+  }
+  .persona-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 2px;
+  }
+  .persona-clinic {
+    font-size: 0.82rem;
+    color: var(--gold-light);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .persona-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .persona-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .ptag {
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(245,240,232,0.6);
+    padding: 3px 8px;
+    border-radius: 100px;
+  }
+  .persona-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+
+  /* ── ACTIVE PERSONA BAR ── */
+  .active-persona-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--navy);
+    border: 1px solid rgba(200,150,62,0.25);
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .apb-left { display: flex; align-items: center; gap: 14px; }
+  .apb-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(200,150,62,0.15);
+    border: 1px solid rgba(200,150,62,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--gold-light);
+    flex-shrink: 0;
+  }
+  .apb-name { font-weight: 600; font-size: 0.95rem; color: var(--cream); }
+  .apb-clinic { font-size: 0.78rem; color: var(--gold-light); }
+  .apb-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .pass-indicator {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .pass-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .pass-indicator.live .pass-dot {
+    background: #e07060;
+    animation: micPulse 1.5s infinite;
+  }
+  .pass-indicator.passed .pass-dot { background: #6fcf97; }
+  .pass-indicator.failed .pass-dot { background: #e07060; animation: none; }
+
+  /* ── OBJECTION TRACKER ── */
+  .objection-tracker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .ot-label { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+  .ot-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ot-pill {
+    font-size: 0.68rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(245,240,232,0.4);
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+  .ot-pill.thrown {
+    background: rgba(192,57,43,0.15);
+    border-color: rgba(192,57,43,0.35);
+    color: #e07060;
+  }
+  .ot-pill.handled {
+    background: rgba(45,122,79,0.15);
+    border-color: rgba(45,122,79,0.35);
+    color: #6fcf97;
+  }
+
+  /* ── VERDICT BANNER ── */
+  .verdict-banner {
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+  }
+  .verdict-banner.pass {
+    background: rgba(45,122,79,0.15);
+    border: 1px solid rgba(45,122,79,0.35);
+  }
+  .verdict-banner.fail {
+    background: rgba(192,57,43,0.12);
+    border: 1px solid rgba(192,57,43,0.3);
+  }
+  .verdict-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  .verdict-banner.pass .verdict-title { color: #6fcf97; }
+  .verdict-banner.fail .verdict-title { color: #e07060; }
+  .verdict-sub { font-size: 0.88rem; color: rgba(245,240,232,0.7); line-height: 1.6; }
+
+
+  /* ── PERSONA AI COACH ── */
+  .persona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 32px; }
+  .persona-card { background: var(--navy); border: 1px solid rgba(245,240,232,0.08); border-radius: 20px; padding: 24px; cursor: pointer; transition: all 0.25s ease; position: relative; }
+  .persona-card:hover { border-color: rgba(200,150,62,0.4); transform: translateY(-3px); background: var(--navy-light); }
+  .persona-card.selected { border-color: var(--gold); border-width: 2px; }
+  .persona-difficulty { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; padding: 3px 10px; border-radius: 100px; margin-bottom: 16px; }
+  .persona-difficulty.hard { background: rgba(192,57,43,0.2); color: #e07060; border: 1px solid rgba(192,57,43,0.3); }
+  .persona-difficulty.medium { background: rgba(200,150,62,0.15); color: var(--gold-light); border: 1px solid rgba(200,150,62,0.25); }
+  .persona-difficulty.easy { background: rgba(45,122,79,0.15); color: #6fcf97; border: 1px solid rgba(45,122,79,0.25); }
+  .persona-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(200,150,62,0.15); border: 2px solid rgba(200,150,62,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold-light); margin-bottom: 14px; }
+  .persona-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream); margin-bottom: 2px; }
+  .persona-clinic { font-size: 0.82rem; color: var(--gold-light); font-weight: 500; margin-bottom: 4px; }
+  .persona-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 14px; }
+  .persona-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .ptag { font-size: 0.68rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(245,240,232,0.6); padding: 3px 8px; border-radius: 100px; }
+  .persona-hint { font-size: 0.78rem; color: var(--muted); font-style: italic; line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; margin-top: 4px; }
+  .active-persona-bar { display: flex; align-items: center; justify-content: space-between; background: var(--navy); border: 1px solid rgba(200,150,62,0.25); border-radius: 14px; padding: 14px 20px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .apb-left { display: flex; align-items: center; gap: 14px; }
+  .apb-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(200,150,62,0.15); border: 1px solid rgba(200,150,62,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--gold-light); flex-shrink: 0; }
+  .apb-name { font-weight: 600; font-size: 0.95rem; color: var(--cream); }
+  .apb-clinic { font-size: 0.78rem; color: var(--gold-light); }
+  .apb-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .pass-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--muted); }
+  .pass-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .pass-indicator.live .pass-dot { background: #e07060; animation: micPulse 1.5s infinite; }
+  .pass-indicator.passed .pass-dot { background: #6fcf97; }
+  .pass-indicator.failed .pass-dot { background: #e07060; animation: none; }
+  .objection-tracker { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; padding: 10px 14px; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
+  .ot-label { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+  .ot-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ot-pill { font-size: 0.68rem; padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); color: rgba(245,240,232,0.4); background: transparent; transition: all 0.3s ease; }
+  .ot-pill.thrown { background: rgba(192,57,43,0.15); border-color: rgba(192,57,43,0.35); color: #e07060; }
+  .ot-pill.handled { background: rgba(45,122,79,0.15); border-color: rgba(45,122,79,0.35); color: #6fcf97; }
+  .verdict-banner { border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; text-align: center; animation: fadeIn 0.5s ease; }
+  .verdict-banner.pass { background: rgba(45,122,79,0.15); border: 1px solid rgba(45,122,79,0.35); }
+  .verdict-banner.fail { background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.3); }
+  .verdict-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; }
+  .verdict-banner.pass .verdict-title { color: #6fcf97; }
+  .verdict-banner.fail .verdict-title { color: #e07060; }
+  .verdict-sub { font-size: 0.88rem; color: rgba(245,240,232,0.7); line-height: 1.6; }
 
   /* ── RESPONSIVE ── */
   @media (max-width: 640px) {
@@ -971,6 +1187,7 @@
     <button class="tab" onclick="switchTab('checklist')">✅ Checklists</button>
     <button class="tab" onclick="switchTab('scripts')">📞 Lead Gen Scripts</button>
     <button class="tab" onclick="switchTab('coach')">🎙️ AI Pitch Coach</button>
+    <button class="tab" onclick="switchTab('persona')">🎭 Persona AI Coach</button>
   </div>
 </header>
 
@@ -1061,75 +1278,204 @@
   </section>
 
   <!-- ═══════════════════════════════════════ -->
-  <!-- TAB 4: AI PITCH COACH                  -->
+  <!-- TAB 4: AI PITCH COACH — REAL PERSONAS  -->
   <!-- ═══════════════════════════════════════ -->
   <section id="coach" class="section">
-    <div class="section-title">AI Pitch Coach</div>
-    <div class="section-sub">Full voice roleplay with an AI clinic owner (Mistral). Your browser reads their lines aloud — practice live, get scored and logged.</div>
+    <div class="section-title">Real Client Pitch Coach</div>
+    <div class="section-sub">Practice on exact replicas of real Melbourne dental clinic owners. Pass = they agree to the 60-day pilot.</div>
 
-    <!-- Config Row -->
-    <div class="coach-config">
-      <div class="coach-field">
-        <label>Scenario</label>
-        <select id="coachScenario">
-          <option value="cold-email">Cold email reply — curious but skeptical</option>
-          <option value="discovery">Discovery call — first real conversation</option>
-          <option value="objection">Objection — "too expensive / tried before"</option>
-          <option value="hot">Hot lead — already interested, needs convincing</option>
-        </select>
+    <!-- Persona Selector Cards -->
+    <div class="persona-grid" id="personaGrid">
+
+      <div class="persona-card" id="pc-dalisay" onclick="coachSelectPersona('dalisay')">
+        <div class="persona-difficulty hard">HARDEST</div>
+        <div class="persona-avatar">DS</div>
+        <div class="persona-name">Dr. Dalisay Sibal</div>
+        <div class="persona-clinic">DIS Dental Surgery</div>
+        <div class="persona-meta">St Albans · Truganina · Hillside · 33 yrs</div>
+        <div class="persona-tags">
+          <span class="ptag">Multi-location</span>
+          <span class="ptag">Filipino community</span>
+          <span class="ptag">Low digital presence</span>
+        </div>
+        <div class="persona-hint">Direct, protective, been burned before. Needs hard ROI proof.</div>
       </div>
-      <div class="coach-field">
-        <label>Suburb / Context</label>
-        <select id="coachSuburb">
-          <option value="Richmond">Richmond</option>
-          <option value="Fitzroy">Fitzroy</option>
-          <option value="Southbank">Southbank</option>
-          <option value="Toorak">Toorak</option>
-          <option value="St Kilda">St Kilda</option>
-          <option value="Melbourne CBD">Melbourne CBD</option>
-          <option value="Geelong">Geelong</option>
-        </select>
+
+      <div class="persona-card" id="pc-leonida" onclick="coachSelectPersona('leonida')">
+        <div class="persona-difficulty medium">MEDIUM</div>
+        <div class="persona-avatar">LC</div>
+        <div class="persona-name">Dr. Leonida Cartas</div>
+        <div class="persona-clinic">BlueSpa Dental</div>
+        <div class="persona-meta">CBD · Heidelberg · Taylors Hill · Est. 1980s</div>
+        <div class="persona-tags">
+          <span class="ptag">Cosmetic-focused</span>
+          <span class="ptag">Premium brand</span>
+          <span class="ptag">Tech-forward</span>
+        </div>
+        <div class="persona-hint">Polished, quality-conscious. Worried about brand fit.</div>
       </div>
-      <div class="coach-field full">
-        <label>Optional webhook override (local file only — on Vercel use <code style="font-size:0.75rem">N8N_COACH_WEBHOOK_URL</code> env)</label>
-        <input type="text" id="coachWebhook" placeholder="Leave empty on live site; paste URL here only when testing from disk" />
+
+      <div class="persona-card" id="pc-nenita" onclick="coachSelectPersona('nenita')">
+        <div class="persona-difficulty easy">EASIER</div>
+        <div class="persona-avatar">NL</div>
+        <div class="persona-name">Dr. Nenita Lalin</div>
+        <div class="persona-clinic">Western Dental Care</div>
+        <div class="persona-meta">Cairnlea · Single location · 28 yrs · Bulk billing</div>
+        <div class="persona-tags">
+          <span class="ptag">Volume-focused</span>
+          <span class="ptag">Budget-conscious</span>
+          <span class="ptag">Community-rooted</span>
+        </div>
+        <div class="persona-hint">Warm but price-sensitive. Needs simplicity + speed.</div>
+      </div>
+
+    </div>
+
+    <!-- Active Session (hidden until persona selected) -->
+    <div id="coachSession" style="display:none;">
+
+      <!-- Active Persona Banner -->
+      <div class="active-persona-bar" id="activePersonaBar">
+        <div class="apb-left">
+          <div class="apb-avatar" id="apbAvatar"></div>
+          <div>
+            <div class="apb-name" id="apbName"></div>
+            <div class="apb-clinic" id="apbClinic"></div>
+          </div>
+        </div>
+        <div class="apb-right">
+          <div class="pass-indicator" id="passIndicator">
+            <span class="pass-dot"></span>
+            <span id="passLabel">Pitch to win the 60-day pilot</span>
+          </div>
+          <button class="coach-btn" onclick="coachBackToPersonas()" style="font-size:0.78rem;padding:6px 14px;">↩ Change</button>
+        </div>
+      </div>
+
+      <!-- Objection Progress -->
+      <div class="objection-tracker" id="objectionTracker">
+        <div class="ot-label">Objections thrown:</div>
+        <div class="ot-pills" id="otPills"></div>
+      </div>
+
+      <!-- n8n webhook -->
+      <div style="margin-bottom:16px;">
+        <input type="text" id="coachWebhook" placeholder="n8n webhook URL (optional — for Sheets + Slack logging)" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(245,240,232,0.12);border-radius:10px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.82rem;padding:9px 14px;outline:none;" />
+      </div>
+
+      <!-- Chat -->
+      <div class="coach-chat" id="coachChat">
+        <div class="coach-msg system"><div class="coach-bubble">Press Start Session — then tap the mic to deliver your pitch.</div></div>
+      </div>
+
+      <!-- Voice -->
+      <div class="coach-controls">
+        <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()">🎙️</button>
+        <div class="coach-status" id="coachStatus">
+          <strong>Ready.</strong><br>Start a session, then tap the mic.
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:6px;">
+        <span>🔊 Voice:</span><span id="coachVoiceLabel" style="color:var(--gold-light);">detecting...</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="coach-action-row">
+        <button class="coach-btn primary" onclick="coachStartSession()">▶ Start Session</button>
+        <button class="coach-btn" onclick="coachAssessSession()" id="coachAssessBtn" style="display:none;">📊 Score + verdict</button>
+        <button class="coach-btn danger" onclick="coachEndSession()" id="coachEndBtn" style="display:none;">■ End Session</button>
+        <button class="coach-btn" onclick="coachReset()">↺ Reset</button>
+      </div>
+
+      <!-- Pass/Fail Banner -->
+      <div class="verdict-banner" id="verdictBanner" style="display:none;"></div>
+
+      <!-- Scorecard -->
+      <div class="coach-scorecard" id="coachScorecard">
+        <div class="coach-scorecard-title">
+          Session scorecard
+          <span class="webhook-status" id="coachWebhookStatus" style="display:none;"></span>
+        </div>
+        <div class="score-pills" id="coachScorePills"></div>
+        <div id="coachFeedback"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB 5: PERSONA AI COACH                -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="persona" class="section">
+    <div class="section-title">Persona AI Coach</div>
+    <div class="section-sub">Practice on exact replicas of real Melbourne dental clinic owners. Pass = they say yes to the 60-day pilot.</div>
+
+    <div class="persona-grid" id="personaGrid">
+      <div class="persona-card" id="pc-dalisay" onclick="pcoachSelect('dalisay')">
+        <div class="persona-difficulty hard">HARDEST</div>
+        <div class="persona-avatar">DS</div>
+        <div class="persona-name">Dr. Dalisay Sibal</div>
+        <div class="persona-clinic">DIS Dental Surgery</div>
+        <div class="persona-meta">St Albans · Truganina · Hillside · 33 yrs</div>
+        <div class="persona-tags"><span class="ptag">Multi-location</span><span class="ptag">Filipino community</span><span class="ptag">Low digital presence</span></div>
+        <div class="persona-hint">Direct, protective, been burned before. Needs hard ROI proof.</div>
+      </div>
+      <div class="persona-card" id="pc-leonida" onclick="pcoachSelect('leonida')">
+        <div class="persona-difficulty medium">MEDIUM</div>
+        <div class="persona-avatar">LC</div>
+        <div class="persona-name">Dr. Leonida Cartas</div>
+        <div class="persona-clinic">BlueSpa Dental</div>
+        <div class="persona-meta">CBD · Heidelberg · Taylors Hill · Est. 1980s</div>
+        <div class="persona-tags"><span class="ptag">Cosmetic-focused</span><span class="ptag">Premium brand</span><span class="ptag">Has SEO agency</span></div>
+        <div class="persona-hint">Polished, quality-conscious. Worried about brand fit.</div>
+      </div>
+      <div class="persona-card" id="pc-nenita" onclick="pcoachSelect('nenita')">
+        <div class="persona-difficulty easy">EASIER</div>
+        <div class="persona-avatar">NL</div>
+        <div class="persona-name">Dr. Nenita Lalin</div>
+        <div class="persona-clinic">Western Dental Care</div>
+        <div class="persona-meta">Cairnlea · Single location · 28 yrs · Bulk billing</div>
+        <div class="persona-tags"><span class="ptag">Volume-focused</span><span class="ptag">Budget-conscious</span><span class="ptag">Community-rooted</span></div>
+        <div class="persona-hint">Warm but price-sensitive. Needs simplicity + speed.</div>
       </div>
     </div>
 
-    <!-- Chat Window -->
-    <div class="coach-chat" id="coachChat">
-      <div class="coach-msg system">
-        <div class="coach-bubble">Press Start Session to begin. The AI will play the clinic owner — you pitch out loud.</div>
+    <div id="pcoachSession" style="display:none">
+      <div class="active-persona-bar">
+        <div class="apb-left">
+          <div class="apb-avatar" id="pcoachAvatar"></div>
+          <div><div class="apb-name" id="pcoachName"></div><div class="apb-clinic" id="pcoachClinic"></div></div>
+        </div>
+        <div class="apb-right">
+          <div class="pass-indicator" id="pcoachPassIndicator"><span class="pass-dot"></span><span id="pcoachPassLabel">Pitch to win the 60-day pilot</span></div>
+          <button class="coach-btn" onclick="pcoachBackToGrid()" style="font-size:0.78rem;padding:6px 14px;">↩ Change</button>
+        </div>
       </div>
-    </div>
-
-    <!-- Voice Controls -->
-    <div class="coach-controls">
-      <div class="coach-mic-wrap">
-        <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()" title="Hold to speak">🎙️</button>
-        <div class="coach-voice-label" id="coachVoiceLabel" title="Best free AU/GB voice we found on this device">Clinic owner voice: …</div>
+      <div class="objection-tracker"><div class="ot-label">Objections thrown:</div><div class="ot-pills" id="pcoachObjPills"></div></div>
+      <input type="text" id="pcoachWebhook" placeholder="n8n webhook URL (optional — logs to Sheets + Slack)" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(245,240,232,0.12);border-radius:10px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.82rem;padding:9px 14px;outline:none;margin-bottom:16px;" />
+      <div class="coach-chat" id="pcoachChat">
+        <div class="coach-msg system"><div class="coach-bubble">Press Start Session — then tap the mic to deliver your pitch.</div></div>
       </div>
-      <div class="coach-status" id="coachStatus">
-        <strong>Ready when you are.</strong><br>Start a session, then tap the mic to speak your pitch.
+      <div class="coach-controls">
+        <div class="coach-mic-wrap">
+          <button class="coach-mic-btn disabled" id="pcoachMicBtn" onclick="pcoachToggleMic()">🎙️</button>
+          <div class="coach-voice-label" id="pcoachVoiceLabel">Voice: detecting…</div>
+        </div>
+        <div class="coach-status" id="pcoachStatus"><strong>Ready.</strong><br>Start a session, then tap the mic.</div>
       </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="coach-action-row">
-      <button class="coach-btn primary" onclick="coachStartSession()">▶ Start Session</button>
-      <button class="coach-btn" onclick="coachAssessSession()" id="coachAssessBtn" style="display:none">📊 Score this session</button>
-      <button class="coach-btn danger" onclick="coachEndSession()" id="coachEndBtn" style="display:none">■ End Session</button>
-      <button class="coach-btn" onclick="coachReset()">↺ Reset</button>
-    </div>
-
-    <!-- Scorecard (shown after assess) -->
-    <div class="coach-scorecard" id="coachScorecard">
-      <div class="coach-scorecard-title">
-        Session scorecard
-        <span class="webhook-status" id="coachWebhookStatus" style="display:none"></span>
+      <div class="coach-action-row">
+        <button class="coach-btn primary" onclick="pcoachStartSession()">▶ Start Session</button>
+        <button class="coach-btn" onclick="pcoachAssess()" id="pcoachAssessBtn" style="display:none">📊 Score + verdict</button>
+        <button class="coach-btn danger" onclick="pcoachEnd()" id="pcoachEndBtn" style="display:none">■ End Session</button>
+        <button class="coach-btn" onclick="pcoachReset()">↺ Reset</button>
       </div>
-      <div class="score-pills" id="coachScorePills"></div>
-      <div id="coachFeedback"></div>
+      <div class="verdict-banner" id="pcoachVerdict" style="display:none"></div>
+      <div class="coach-scorecard" id="pcoachScorecard">
+        <div class="coach-scorecard-title">Session scorecard <span class="webhook-status" id="pcoachWebhookStatus" style="display:none"></span></div>
+        <div class="score-pills" id="pcoachScorePills"></div>
+        <div id="pcoachFeedback"></div>
+      </div>
     </div>
   </section>
 
@@ -1595,120 +1941,216 @@ function unlockApp() {
 // AI PITCH COACH — all vars prefixed coach_ to avoid conflicts
 // ═══════════════════════════════════════════════════
 
-/** On Vercel, the key lives in server env — visitors need nothing. Opening as file:// still needs localStorage. */
-function coachHostedOnWeb() {
-  try {
-    return location.protocol === 'http:' || location.protocol === 'https:';
-  } catch (e) {
-    return false;
-  }
-}
-function coachGetApiKey() {
-  try {
-    return localStorage.getItem('coach_mistral_api_key') || localStorage.getItem('coach_claude_api_key') || '';
-  } catch (e) {
-    return '';
-  }
-}
-function coachExtractReplyText(data) {
-  const direct = data?.choices?.[0]?.message?.content;
-  if (typeof direct === 'string' && direct.length) return direct;
-  const blocks = data && data.content;
-  if (Array.isArray(blocks)) {
-    for (let i = 0; i < blocks.length; i++) {
-      const b = blocks[i];
-      if (b && b.type === 'text' && typeof b.text === 'string') return b.text;
-    }
-  }
-  return data?.error?.message || 'Could you repeat that?';
-}
+const COACH_CLAUDE_API_KEY = 'YOUR_CLAUDE_API_KEY'; // ← replace
 
-async function coachCallMistral(payload) {
-  const { system, messages, max_tokens } = payload;
-  if (coachHostedOnWeb()) {
-    const res = await fetch('/api/coach', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, messages, max_tokens })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      const e = data.error;
-      const msg =
-        typeof e === 'string'
-          ? e
-          : (e && typeof e === 'object' && e.message)
-            ? e.message
-            : data.message || JSON.stringify(data);
-      throw new Error(msg || 'Coach API error');
-    }
-    return data;
-  }
-  const key = coachGetApiKey();
-  if (!key) throw new Error('no_local_key');
-  const mistralMessages = [];
-  if (system && String(system).trim()) mistralMessages.push({ role: 'system', content: String(system) });
-  (messages || []).forEach((m) => {
-    if (m && (m.role === 'user' || m.role === 'assistant')) mistralMessages.push({ role: m.role, content: String(m.content) });
-  });
-  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'mistral-small-latest',
-      messages: mistralMessages,
-      max_tokens: Math.min(Number(max_tokens) || 512, 4096)
-    })
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    const msg =
-      data.message ||
-      (Array.isArray(data.detail) && data.detail[0]?.msg) ||
-      (typeof data.detail === 'string' ? data.detail : null) ||
-      JSON.stringify(data);
-    throw new Error(msg);
-  }
-  return data;
-}
+// ═══════════════════════════════════════════════════
+// REAL CLINIC PERSONAS — based on actual research
+// ═══════════════════════════════════════════════════
 
-/** How the AI clinic owner *writes* lines — less robotic, more like a real call */
-const COACH_AI_VOICE = `How you write your spoken lines (critical): You're on a live phone call — sound like a real person, not a brochure or LinkedIn post. Use contractions (I'm, we're, don't, that's). Mix short lines with longer ones; occasional "look", "I mean", "honestly" is fine. Show real attitude: scepticism, dry humour, impatience, or curiosity — never flat corporate neutral. No bullet points, no numbered lists, no stacked jargon. 2–4 sentences usually; sometimes one sharp sentence is enough. Australian-leaning, casual-professional.`;
+const REAL_PERSONAS = {
+  dalisay: {
+    id: 'dalisay',
+    initials: 'DS',
+    name: 'Dr. Dalisay Sibal',
+    clinic: 'DIS Dental Surgery',
+    difficulty: 'HARDEST',
+    opener: `"Hello? Yes, this is Dr. Dalisay. I only have a few minutes — I have patients waiting. You said this is about marketing for my clinic? We've been in St Albans for 33 years. We're not really looking for marketing help."`,
+    objections: [
+      { id: 'enough', label: 'Already have patients' },
+      { id: 'burned', label: 'Tried marketing before' },
+      { id: 'ai', label: "Don't trust AI" },
+      { id: 'price', label: 'Too expensive' },
+      { id: 'busy', label: "Too busy" },
+      { id: 'community', label: 'Prove it works here' }
+    ],
+    system: `You are Dr. Dalisay Santos Sibal, principal dentist and founder of DIS Dental Surgery. You are a tough, no-nonsense Filipino-Australian dentist who has run your own practice for 33 years across 3 locations: St Albans, Truganina, and Hillside (Sugar Gum Health). You speak English and Tagalog and are deeply trusted in the Filipino community in Melbourne's western suburbs.
 
-const COACH_SCENE_DATA = {
-  'cold-email': {
-    opener: (suburb) => `"Thanks for reaching out about ${suburb} Dental. We're already pretty busy — why would we need this?"`,
-    system: (suburb) => `You are Dr. Mitchell, owner of ${suburb} Dental, a busy Melbourne dental clinic. You just received a cold email from QuadGrowth, an AI marketing agency. You replied and they called you. You are: cautious, protective of your time, skeptical of marketing agencies (you've been burned before), but quietly curious if they can actually fill empty slots. Raise real objections. Reference ${suburb} specifically. After 4+ good exchanges where the rep shows genuine understanding, you may warm up and agree to a 20-min call. Never break character.`
+YOUR REAL SITUATION (use this to make objections feel real):
+- You have 3 locations and coordinate patient flow is getting messy
+- Your Truganina location has only 4 Google reviews despite being 5-star — you know your online presence is weak but haven't had time to fix it
+- You use a Gmail address for reception (disdental.reception@gmail.com) — no CRM, no automation
+- You offer implants, braces/aligners, and dentures — high-value services that need more patients
+- You've been approached by marketing agencies before and wasted money on Google Ads that brought the wrong type of patients
+- Your community patients come through word of mouth — you worry that digital marketing won't work for your Filipino patient base
+
+YOUR PERSONALITY:
+- Direct and time-poor. Short replies. Don't waste her time.
+- Skeptical of AI — worried it sounds impersonal for a community-based clinic
+- Price-sensitive — you reinvest profits into the clinic, not marketing
+- Protective of your brand and community reputation built over 33 years
+- Will warm up ONLY if the rep shows they know your specific situation (3 locations, Filipino community, low reviews, high-value services)
+
+OBJECTIONS TO RAISE (raise them naturally, one at a time as they come up):
+1. "We already have enough patients — we're actually quite full most weeks"
+2. "We tried Google Ads last year — wasted thousands. How is this different?"  
+3. "I'm not comfortable with AI talking to my patients. They expect a personal touch from us."
+4. "What does this cost? Because if it's thousands a month, I can't justify that."
+5. "Look, I have 3 clinics to run. I don't have time to manage another vendor."
+6. "Can you even prove this works for a Filipino community clinic? Our patients aren't like mainstream ones."
+
+PASS CONDITION: Only say yes to the 60-day pilot if ALL of these are true:
+- They specifically mention your 3 locations and the opportunity to cross-refer patients between them
+- They address the Filipino community concern with a specific strategy (not a vague answer)
+- They give a clear ROI number (e.g. "if we fill 5 extra implant consults at $3k each, that's $15k — we charge $X")
+- They acknowledge your low review count at Truganina as something they'd specifically fix
+If even one of these is missing, stay skeptical. Keep pushing. Say "I'll think about it" not "yes".
+
+FAIL CONDITION: If the rep gets pushy, talks over you, can't answer the Filipino community question, or gives a vague pitch — end the call politely: "Look, I appreciate the call but I don't think this is right for us right now."
+
+Speak as Dr. Dalisay. Keep replies to 2-4 sentences. Be realistic and tough but fair.`
   },
-  'discovery': {
-    opener: (suburb) => `"Hi, I've got about 15 minutes. You said you help dental clinics in ${suburb}? We tried Google Ads last year — wasted about four grand. Why is this different?"`,
-    system: (suburb) => `You are Dr. Chen, principal dentist at ${suburb} Dental Studio in Melbourne. You're on a discovery call. You're analytical, ask pointed questions, and need specific evidence before you'll consider anything. You have 3 part-time dentists, 60% appointment capacity, and your main frustration is no-show patients and weak new patient flow. Push for specifics. If they explain the AI targeting and reactivation approach clearly, show real interest.`
+
+  leonida: {
+    id: 'leonida',
+    initials: 'LC',
+    name: 'Dr. Leonida Cartas',
+    clinic: 'BlueSpa Dental',
+    difficulty: 'MEDIUM',
+    opener: `"Hi, this is Dr. Cartas from BlueSpa Dental. I received your email — I have to say I was a little curious but also a little cautious. We already work with an SEO agency. What exactly makes QuadGrowth different?"`,
+    objections: [
+      { id: 'enough', label: 'Already have patients' },
+      { id: 'burned', label: 'Have an agency already' },
+      { id: 'ai', label: "Brand fit concern" },
+      { id: 'price', label: 'Cost vs current spend' },
+      { id: 'busy', label: 'Too busy' },
+      { id: 'community', label: 'Prove premium fit' }
+    ],
+    system: `You are Dr. Leonida Bravo Cartas, principal dentist and director of BlueSpa Dental — a premium cosmetic dental brand with 3 locations in Melbourne CBD (Collins St), Heidelberg, and Taylors Hill. You have been in practice since the 1980s. You are a Fellow of the International College of Continuing Dental Education and an accredited member of the Australian Dental Association.
+
+YOUR REAL SITUATION:
+- You run a premium cosmetic clinic — Invisalign, Zoom whitening, implants, veneers
+- Your Google rating is 4.5 stars with 24 reviews — solid but could be more for a practice this size
+- You have a professional website (cosmetic-dentist-melbourne.com.au) and already work with an SEO agency
+- Your patients are professionals — CBD workers, affluent suburbs. Average treatment value is very high.
+- You pride yourself on the "BlueSpa experience" — warm, non-clinical, spa-like environment
+- Your concern is that AI marketing might cheapen your premium brand feel
+
+YOUR PERSONALITY:
+- Polished, articulate, and measured. Never rude but always probing.
+- Brand-protective — everything must feel premium, warm, and human
+- Already tech-forward (Invisalign partner, Zoom whitening) so open to technology but needs it to feel right
+- Will ask specific questions about how the AI communicates with patients
+- Impressed by specificity — vague pitches bore her
+
+OBJECTIONS TO RAISE naturally:
+1. "We're actually doing quite well — our 3 locations are busy, especially CBD."
+2. "We already have an SEO agency. I'm not sure we need another vendor."
+3. "How does your AI communicate with patients? I'm very protective of the BlueSpa tone — it has to feel warm, not robotic."
+4. "What are we talking about cost-wise? We have a marketing budget but I need to see value."
+5. "I'm in clinic most of the week — who manages the relationship with you day-to-day?"
+6. "Do you have examples of other premium cosmetic clinics you've worked with? Not just any dental clinic."
+
+PASS CONDITION: Say yes to the pilot ONLY if:
+- They address the brand/tone concern specifically (e.g. customised AI voice, human-supervised)
+- They mention a cosmetic-specific strategy (reactivating Invisalign or whitening leads, not just check-ups)
+- They can answer how this complements (not replaces) her existing SEO agency
+- They give a realistic timeline for results (2-4 weeks for first metrics)
+
+Speak as Dr. Cartas. Polished and precise. Replies 2-4 sentences.`
   },
-  'objection': {
-    opener: (suburb) => `"Look, I'm interested in the concept but two and a half thousand a month feels steep — that's in the ballpark of what you quoted. And honestly I've heard the AI marketing pitch before — it never delivers. Convince me."`,
-    system: (suburb) => `You are Dr. Thompson, owner of ${suburb} Family Dental. You're interested but defensive about budget and past bad experiences. You need a clear ROI case, proof it's not just another agency, and confidence they understand dental specifically. You have 8 empty appointment slots per week worth roughly AUD 350–500 each. If the rep does the maths clearly in Australian dollars and addresses your trust concern directly, you'll agree to a trial proposal.`
-  },
-  'hot': {
-    opener: (suburb) => `"Hi, I saw your email and actually — this is pretty timely. We're expanding our ${suburb} practice next month and need more patients fast. What exactly do you do and how quickly can you start?"`,
-    system: (suburb) => `You are Dr. Park, owner of ${suburb} Smile Co. You're genuinely interested and expanding. You care about speed, clear onboarding, realistic timelines, and knowing exactly what you're paying for. Push on how fast results come, what you need to provide, whether it works for a new location, and contract terms. If the rep is organised and specific, you'll ask to book a formal proposal meeting.`
+
+  nenita: {
+    id: 'nenita',
+    initials: 'NL',
+    name: 'Dr. Nenita Lalin',
+    clinic: 'Western Dental Care',
+    difficulty: 'EASIER',
+    opener: `"Oh hello! Yes, I got your message. I'm Dr. Nenita from Western Dental Care in Cairnlea. I have to be honest — we're a small practice. I'm not sure if something like this is really for us. We mostly rely on our community and health fund patients."`,
+    objections: [
+      { id: 'enough', label: 'Small practice concern' },
+      { id: 'burned', label: 'Tried flyers/ads before' },
+      { id: 'ai', label: "Tech overwhelm" },
+      { id: 'price', label: 'Budget too tight' },
+      { id: 'busy', label: 'Just me and one other dentist' },
+      { id: 'community', label: 'Works for bulk billing?' }
+    ],
+    system: `You are Dr. Nenita Evangelista-Lalin, principal dentist at Western Dental Care in Cairnlea, VIC 3023. You have 28 years of dental experience — 16 of those at this exact practice since 2007. You trained at Centro Escolar University in the Philippines and further qualified at the Australian Dental Council. You have a special interest in orthodontics (completed a 2-year programme at University of Sydney).
+
+YOUR REAL SITUATION:
+- Single location — 1 Pinewood Crescent, Cairnlea, inside Western Family Medical Centre
+- You and Dr. Murthy are the only two dentists — small, tight-knit team
+- You bulk bill Child Dental Benefits (Medicare) and are a preferred provider for Bupa and HCF
+- Your patients are families and community members from Cairnlea, Deer Park, Caroline Springs, St Albans
+- You've tried letterbox drops and a Yellow Pages ad years ago — they didn't do much
+- 23 reviews on BirdEye — decent local reputation but modest digital footprint
+- Saturday appointments available — you work hard to be accessible
+
+YOUR PERSONALITY:
+- Warm and community-oriented — genuinely cares about her patients
+- Honest about being a small operation — no pretense
+- Worried about cost — tight margins from bulk billing
+- Slightly tech-anxious — not a digital native but open if it's simple
+- Will respond well to empathy and to someone who understands small practices
+
+OBJECTIONS TO RAISE naturally:
+1. "We're only a small practice — I'm not sure we have the patient volume for something like this."
+2. "We tried letterbox drops a few years ago and honestly it didn't bring many people in."
+3. "I'm not very tech-savvy and neither is my receptionist. Would this be complicated to manage?"
+4. "What's the cost? Because with bulk billing patients, our margins aren't huge."
+5. "It's really just me and one other dentist — I can't handle a big rush of new patients all at once."
+6. "Would this work for a practice that does a lot of bulk billing? Or is it more for private patients?"
+
+PASS CONDITION: Say yes to the pilot if:
+- They acknowledge she's a small practice and frame the pilot as low-risk and manageable
+- They address the bulk billing question specifically (e.g. reactivating existing patients, not just new patient acquisition)
+- They keep it simple — no jargon, clear next steps
+- The price feels within reach or the ROI is explained in plain terms (e.g. "even 3 extra check-ups a week at $180 each covers the cost")
+- They show warmth — this is a relationship-based practice
+
+She's the most likely to say yes if the rep is warm, clear, and not pushy.
+
+Speak as Dr. Nenita. Warm but cautious. 2-4 sentences.`
   }
 };
 
+let coach_currentPersona = null;
 let coach_sessionActive = false;
-let coach_chatHistory = []; // user → assistant → user … (Mistral chat format)
-let coach_sessionOpener = '';
+let coach_chatHistory = [];
 let coach_transcript = [];
 let coach_recognition = null;
 let coach_isListening = false;
 let coach_isSpeaking = false;
 let coach_synth = window.speechSynthesis;
 let coach_currentUtterance = null;
+let coach_objectionsThrown = new Set();
+let coach_objectionsHandled = new Set();
+let coach_pilotAgreed = false;
+let coach_callEnded = false;
 
-function coachGetScenario() { return document.getElementById('coachScenario').value; }
-function coachGetSuburb() { return document.getElementById('coachSuburb').value; }
+function coachSelectPersona(id) {
+  coach_currentPersona = REAL_PERSONAS[id];
+  document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc-' + id).classList.add('selected');
+
+  // Update active persona bar
+  document.getElementById('apbAvatar').textContent = coach_currentPersona.initials;
+  document.getElementById('apbName').textContent = coach_currentPersona.name;
+  document.getElementById('apbClinic').textContent = coach_currentPersona.clinic;
+
+  // Build objection tracker pills
+  const pills = coach_currentPersona.objections.map(o =>
+    `<span class="ot-pill" id="otp-${o.id}">${o.label}</span>`
+  ).join('');
+  document.getElementById('otPills').innerHTML = pills;
+
+  // Show session panel
+  document.getElementById('personaGrid').style.display = 'none';
+  document.getElementById('coachSession').style.display = 'block';
+
+  coachReset();
+}
+
+function coachBackToPersonas() {
+  coachStopSpeaking();
+  if (coach_recognition) { try { coach_recognition.stop(); } catch(e){} }
+  document.getElementById('personaGrid').style.display = 'grid';
+  document.getElementById('coachSession').style.display = 'none';
+  coach_currentPersona = null;
+}
+
+function coachGetPersonaName() {
+  return coach_currentPersona ? coach_currentPersona.name.split(' ')[1] : 'Doctor';
+}
 
 function coachAppendMsg(role, text) {
   const chat = document.getElementById('coachChat');
@@ -1716,7 +2158,8 @@ function coachAppendMsg(role, text) {
   div.className = `coach-msg ${role}`;
   const label = document.createElement('span');
   label.className = 'coach-msg-label';
-  label.textContent = role === 'user' ? 'You (pitch)' : role === 'ai' ? `Dr. — ${coachGetSuburb()} Dental` : '';
+  if (role === 'user') label.textContent = 'You (pitch)';
+  else if (role === 'ai') label.textContent = coach_currentPersona ? coach_currentPersona.name : 'Clinic owner';
   const bubble = document.createElement('div');
   bubble.className = 'coach-bubble';
   bubble.textContent = text;
@@ -1733,32 +2176,41 @@ function coachSetStatus(msg, state='') {
   el.innerHTML = msg;
 }
 
-async function coachStartSession() {
-  if (!coachHostedOnWeb() && !coachGetApiKey()) {
-    alert('Pitch coach needs a Mistral API key when opened as a file.\n\nDevTools → Console:\nlocalStorage.setItem("coach_mistral_api_key", "YOUR_KEY");\nthen refresh.\n\nOn Vercel, add MISTRAL_API_KEY in project env — visitors need nothing.');
-    return;
-  }
+function coachStartSession() {
+  if (!coach_currentPersona) return;
   coach_sessionActive = true;
   coach_chatHistory = [];
   coach_transcript = [];
-  const chat = document.getElementById('coachChat');
-  chat.innerHTML = '';
+  coach_objectionsThrown = new Set();
+  coach_objectionsHandled = new Set();
+  coach_pilotAgreed = false;
+  coach_callEnded = false;
+
+  document.getElementById('coachChat').innerHTML = '';
   document.getElementById('coachScorecard').classList.remove('visible');
+  document.getElementById('verdictBanner').style.display = 'none';
   document.getElementById('coachAssessBtn').style.display = 'inline-block';
   document.getElementById('coachEndBtn').style.display = 'inline-block';
   document.getElementById('coachMicBtn').classList.remove('disabled');
 
-  const scenario = coachGetScenario();
-  const suburb = coachGetSuburb();
-  const opener = COACH_SCENE_DATA[scenario].opener(suburb);
-  coach_sessionOpener = opener;
+  const pi = document.getElementById('passIndicator');
+  pi.className = 'pass-indicator live';
+  document.getElementById('passLabel').textContent = 'Live — pitch to win the 60-day pilot';
 
-  coachAppendMsg('system', `Session started — ${document.getElementById('coachScenario').options[document.getElementById('coachScenario').selectedIndex].text}`);
+  // Reset objection pills
+  coach_currentPersona.objections.forEach(o => {
+    const pill = document.getElementById('otp-' + o.id);
+    if (pill) pill.className = 'ot-pill';
+  });
+
+  const opener = coach_currentPersona.opener;
+  coachAppendMsg('system', `Session started — pitching to ${coach_currentPersona.name}, ${coach_currentPersona.clinic}`);
   coachAppendMsg('ai', opener);
+  coach_chatHistory.push({ role: 'assistant', content: opener });
   coach_transcript.push({ speaker: 'clinic_owner', text: opener });
 
-  coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
-  await coachSpeak(opener);
+  coachSpeak(opener);
+  coachSetStatus(`<strong>${coachGetPersonaName()} spoke.</strong><br>Tap mic to respond with your pitch.`, '');
 }
 
 function coachReset() {
@@ -1766,16 +2218,22 @@ function coachReset() {
   if (coach_recognition) { try { coach_recognition.stop(); } catch(e){} }
   coach_sessionActive = false;
   coach_chatHistory = [];
-  coach_sessionOpener = '';
   coach_transcript = [];
+  coach_objectionsThrown = new Set();
+  coach_objectionsHandled = new Set();
+  coach_pilotAgreed = false;
+  coach_callEnded = false;
   coach_isListening = false;
   document.getElementById('coachMicBtn').classList.remove('recording');
   document.getElementById('coachMicBtn').classList.add('disabled');
   document.getElementById('coachAssessBtn').style.display = 'none';
   document.getElementById('coachEndBtn').style.display = 'none';
   document.getElementById('coachScorecard').classList.remove('visible');
-  document.getElementById('coachChat').innerHTML = '<div class="coach-msg system"><div class="coach-bubble">Press Start Session to begin. The AI will play the clinic owner — you pitch out loud.</div></div>';
-  coachSetStatus('<strong>Ready when you are.</strong><br>Start a session, then tap the mic to speak your pitch.', '');
+  document.getElementById('verdictBanner').style.display = 'none';
+  document.getElementById('coachChat').innerHTML = '<div class="coach-msg system"><div class="coach-bubble">Press Start Session — then tap the mic to deliver your pitch.</div></div>';
+  document.getElementById('passIndicator').className = 'pass-indicator';
+  document.getElementById('passLabel').textContent = 'Pitch to win the 60-day pilot';
+  coachSetStatus('<strong>Ready.</strong><br>Start a session, then tap the mic.', '');
 }
 
 function coachEndSession() {
@@ -1784,198 +2242,173 @@ function coachEndSession() {
   coach_sessionActive = false;
   document.getElementById('coachMicBtn').classList.add('disabled');
   document.getElementById('coachMicBtn').classList.remove('recording');
-  coachSetStatus('<strong>Session ended.</strong><br>Click "Score this session" for your assessment.', '');
-  coachAppendMsg('system', 'Session ended. Click "Score this session" for your assessment.');
+  coachSetStatus('<strong>Session ended.</strong><br>Click "Score + verdict" for your full assessment.', '');
+  coachAppendMsg('system', 'Session ended. Click "Score + verdict" to see if you passed.');
 }
 
 function coachToggleMic() {
   if (!coach_sessionActive) return;
-  if (coach_isSpeaking) { coachStopSpeaking(); }
-  if (coach_isListening) {
-    coachStopListening();
-  } else {
-    coachStartListening();
-  }
+  if (coach_isSpeaking) coachStopSpeaking();
+  if (coach_isListening) coachStopListening();
+  else coachStartListening();
 }
 
 function coachStartListening() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    coachSetStatus('Voice not supported in this browser. Use Chrome.', '');
-    return;
-  }
-  coach_recognition = new SpeechRecognition();
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { coachSetStatus('Voice not supported. Use Chrome.', ''); return; }
+  coach_recognition = new SR();
   coach_recognition.lang = 'en-AU';
   coach_recognition.continuous = false;
   coach_recognition.interimResults = false;
-
   coach_recognition.onstart = () => {
     coach_isListening = true;
     document.getElementById('coachMicBtn').classList.add('recording');
     coachSetStatus('<strong style="color:#e07060">🔴 Listening...</strong><br>Speak your pitch. Tap mic again to stop.', 'listening');
   };
-
   coach_recognition.onresult = (e) => {
     const text = e.results[0][0].transcript;
     coachHandleUserSpeech(text);
   };
-
   coach_recognition.onerror = (e) => {
     coach_isListening = false;
     document.getElementById('coachMicBtn').classList.remove('recording');
     coachSetStatus(`<strong>Mic error:</strong> ${e.error}. Try again.`, '');
   };
-
   coach_recognition.onend = () => {
     coach_isListening = false;
     document.getElementById('coachMicBtn').classList.remove('recording');
   };
-
   coach_recognition.start();
 }
 
 function coachStopListening() {
-  if (coach_recognition) {
-    try { coach_recognition.stop(); } catch(e){}
-  }
+  if (coach_recognition) { try { coach_recognition.stop(); } catch(e){} }
   coach_isListening = false;
   document.getElementById('coachMicBtn').classList.remove('recording');
 }
 
 async function coachHandleUserSpeech(text) {
-  if (!text.trim()) return;
+  if (!text.trim() || !coach_currentPersona) return;
   coachAppendMsg('user', text);
   coach_chatHistory.push({ role: 'user', content: text });
   coach_transcript.push({ speaker: 'rep', text });
-  coachSetStatus('<strong>Clinic owner is thinking...</strong>', 'speaking');
-
-  const scenario = coachGetScenario();
-  const suburb = coachGetSuburb();
-  let systemPrompt = COACH_SCENE_DATA[scenario].system(suburb) + '\n\n' + COACH_AI_VOICE;
-  if (coach_chatHistory.length === 1) {
-    systemPrompt += `\n\nYou already opened with (they heard it): ${coach_sessionOpener}\nThey're replying now — answer in character; don't repeat the whole opener unless it fits.`;
-  }
+  coachSetStatus(`<strong>${coachGetPersonaName()} is thinking...</strong>`, 'speaking');
 
   const thinkingBubble = coachAppendMsg('ai', '');
   thinkingBubble.innerHTML = '<span class="speaking-indicator"><span></span><span></span><span></span></span>';
 
+  // Build system prompt with objection tracking context
+  const thrownList = Array.from(coach_objectionsThrown).join(', ');
+  const systemWithContext = coach_currentPersona.system +
+    (thrownList ? `\n\nObjections you have ALREADY raised in this conversation: ${thrownList}. Don't repeat these — move to new ones or respond to how they addressed them.` : '') +
+    `\n\nIMPORTANT: If the rep's response shows they've handled an objection well, note it in your reply and move on. If they've convinced you on ALL pass conditions, say something like "Okay... I have to say, you've addressed my concerns. I'm willing to give the 60-day pilot a try — but I'll be watching the results closely." Only say this once ALL conditions are genuinely met.`;
+
   try {
-    const data = await coachCallMistral({
-      max_tokens: 400,
-      system: systemPrompt,
-      messages: coach_chatHistory
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': document.getElementById('coachWebhook')?.dataset?.apikey || 'YOUR_CLAUDE_API_KEY',
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 350,
+        system: systemWithContext,
+        messages: coach_chatHistory
+      })
     });
-    const reply = coachExtractReplyText(data);
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Sorry, could you repeat that?';
     thinkingBubble.textContent = reply;
     coach_chatHistory.push({ role: 'assistant', content: reply });
     coach_transcript.push({ speaker: 'clinic_owner', text: reply });
-    coachSetStatus('<strong style="color:var(--gold-light)">🔊 Clinic owner speaking...</strong><br>Wait for them to finish, then tap mic.', 'speaking');
-    await coachSpeak(reply);
-  } catch(e) {
-    thinkingBubble.textContent = e.message === 'no_local_key' ? 'Add API key (see Start Session tip).' : (e.message || 'API error.');
-    coachSetStatus('<strong>Error.</strong> ' + (coachHostedOnWeb() ? 'Add MISTRAL_API_KEY in Vercel and redeploy.' : 'Check console.'), '');
-  }
-}
 
-/** Best free system voices: Mac Karen/Daniel → Windows Natasha/Libby/Sonia → Google AU/UK → en-AU → en-GB → en */
-function coachPickBestVoice(voices) {
-  if (!voices || !voices.length) return null;
-  const n = (s) => String(s || '').toLowerCase();
-  const rules = [
-    (v) => n(v.name).includes('karen') && n(v.lang).includes('au'),
-    (v) => n(v.name).includes('karen'),
-    (v) => n(v.name).includes('daniel'),
-    (v) => n(v.name).includes('natasha') && (n(v.name).includes('natural') || n(v.name).includes('online')),
-    (v) => n(v.name).includes('natasha'),
-    (v) => n(v.name).includes('libby'),
-    (v) => n(v.name).includes('sonia'),
-    (v) => n(v.name).includes('google') && n(v.lang).includes('au'),
-    (v) => n(v.name).includes('google') && n(v.name).includes('uk') && n(v.name).includes('female'),
-    (v) => n(v.name).includes('google uk english'),
-    (v) => n(v.lang).includes('en-au'),
-    (v) => n(v.lang).includes('en-gb'),
-    (v) => n(v.lang).startsWith('en'),
-  ];
-  for (const pred of rules) {
-    const found = voices.find(pred);
-    if (found) return found;
-  }
-  return voices[0];
-}
+    // Detect objections thrown (keyword scan)
+    coachDetectObjections(reply);
 
-function coachUpdateVoiceLabel() {
-  const el = document.getElementById('coachVoiceLabel');
-  if (!el || typeof speechSynthesis === 'undefined') return;
-  const voices = speechSynthesis.getVoices();
-  const v = coachPickBestVoice(voices);
-  if (v) {
-    el.textContent = 'Voice: ' + v.name + ' (' + (v.lang || '') + ')';
-  } else {
-    el.textContent = 'Voice: loading… (tap Start if stuck)';
-  }
-}
-
-function coachInitTtsVoicePreload() {
-  coachUpdateVoiceLabel();
-  if (typeof speechSynthesis !== 'undefined') {
-    speechSynthesis.onvoiceschanged = coachUpdateVoiceLabel;
-  }
-}
-
-/** Browser reads Mistral’s lines (no extra TTS API). */
-async function coachSpeak(text) {
-  coachStopSpeaking();
-  const t = String(text || '').trim();
-  if (!t) return;
-  return new Promise((resolve) => {
-    coach_isSpeaking = true;
-    coach_currentUtterance = new SpeechSynthesisUtterance(t);
-    coach_currentUtterance.rate = 0.96;
-    coach_currentUtterance.pitch = 1.0;
-    const voices = coach_synth.getVoices();
-    const v = coachPickBestVoice(voices);
-    if (v) {
-      coach_currentUtterance.voice = v;
-      coach_currentUtterance.lang = v.lang || 'en-AU';
-      coachUpdateVoiceLabel();
-    } else {
-      coach_currentUtterance.lang = 'en-AU';
+    // Detect pilot agreement
+    const pilotKeywords = ['60-day pilot', 'give it a try', 'willing to try', 'let\'s do it', 'go ahead', 'I\'m in', 'send me the details', 'sounds good'];
+    if (pilotKeywords.some(k => reply.toLowerCase().includes(k.toLowerCase()))) {
+      coach_pilotAgreed = true;
+      coachShowVerdict(true, reply);
     }
-    coach_currentUtterance.onend = () => {
-      coach_isSpeaking = false;
-      if (coach_sessionActive) {
-        coachSetStatus('<strong>Clinic owner finished.</strong><br>Tap the mic to respond.', '');
-      }
-      resolve();
-    };
-    coach_synth.speak(coach_currentUtterance);
-  });
+
+    // Detect call ended / rejection
+    const failKeywords = ['not right for us', 'don\'t think this is', 'appreciate the call but', 'not interested', 'goodbye'];
+    if (failKeywords.some(k => reply.toLowerCase().includes(k.toLowerCase()))) {
+      coach_callEnded = true;
+      coachShowVerdict(false, reply);
+    }
+
+    coachSpeak(reply);
+    coachSetStatus(`<strong style="color:var(--gold-light)">🔊 ${coachGetPersonaName()} speaking...</strong><br>Wait, then tap mic.`, 'speaking');
+  } catch(e) {
+    thinkingBubble.textContent = 'API error — add your Claude API key to the code.';
+    coachSetStatus('<strong>Error.</strong> Check API key in the code.', '');
+  }
 }
 
-function coachStopSpeaking() {
-  coach_synth.cancel();
-  coach_isSpeaking = false;
+function coachDetectObjections(reply) {
+  const r = reply.toLowerCase();
+  const map = {
+    'enough': ['already have', 'quite full', 'busy enough', 'don\'t need more'],
+    'burned': ['tried', 'wasted', 'didn\'t work', 'agency before', 'google ads'],
+    'ai': ['ai', 'artificial', 'robotic', 'impersonal', 'personal touch', 'brand'],
+    'price': ['cost', 'price', 'expensive', 'afford', 'budget', 'margin'],
+    'busy': ['busy', 'time', 'manage', 'can\'t handle', 'just me'],
+    'community': ['community', 'filipino', 'bulk bill', 'our patients', 'mainstream', 'premium']
+  };
+  for (const [key, keywords] of Object.entries(map)) {
+    if (keywords.some(k => r.includes(k))) {
+      coach_objectionsThrown.add(key);
+      const pill = document.getElementById('otp-' + key);
+      if (pill && !pill.classList.contains('handled')) pill.className = 'ot-pill thrown';
+    }
+  }
+}
+
+function coachMarkHandled(objId) {
+  coach_objectionsHandled.add(objId);
+  const pill = document.getElementById('otp-' + objId);
+  if (pill) pill.className = 'ot-pill handled';
+}
+
+function coachShowVerdict(passed, triggerReply) {
+  coach_sessionActive = false;
+  document.getElementById('coachMicBtn').classList.add('disabled');
+  const pi = document.getElementById('passIndicator');
+  pi.className = 'pass-indicator ' + (passed ? 'passed' : 'failed');
+  document.getElementById('passLabel').textContent = passed ? '✓ PASSED — Pilot secured!' : '✗ FAILED — Call ended';
+
+  const banner = document.getElementById('verdictBanner');
+  banner.style.display = 'block';
+  if (passed) {
+    banner.className = 'verdict-banner pass';
+    banner.innerHTML = `<div class="verdict-title">🎉 Pilot Secured!</div><div class="verdict-sub">${coach_currentPersona.name} agreed to the 60-day pilot.<br>Now click "Score + verdict" to see your full breakdown.</div>`;
+  } else {
+    banner.className = 'verdict-banner fail';
+    banner.innerHTML = `<div class="verdict-title">📵 Call Ended</div><div class="verdict-sub">${coach_currentPersona.name} wasn't convinced.<br>Click "Score + verdict" to find out exactly what went wrong.</div>`;
+  }
+  banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 async function coachAssessSession() {
-  if (!coachHostedOnWeb() && !coachGetApiKey()) {
-    alert('Set your API key in localStorage first (see Start Session instructions).');
-    return;
-  }
-  if (coach_transcript.length < 2) {
-    alert('Have at least one exchange before scoring.');
-    return;
-  }
+  if (coach_transcript.length < 2) { alert('Have at least one exchange before scoring.'); return; }
   coachSetStatus('<strong>Analysing your session...</strong>', 'speaking');
 
   const transcriptText = coach_transcript.map(t =>
-    `${t.speaker === 'rep' ? 'REP' : 'CLINIC OWNER'}: ${t.text}`
+    `${t.speaker === 'rep' ? 'REP' : coach_currentPersona.name.toUpperCase()}: ${t.text}`
   ).join('\n');
 
+  const passed = coach_pilotAgreed;
   const prompt = `You are a senior sales coach for QuadGrowth, an AI-powered dental marketing agency targeting Melbourne dental clinics.
 
-Assess this pitch practice session transcript. Return ONLY valid JSON, no markdown:
+The rep was pitching to ${coach_currentPersona.name} from ${coach_currentPersona.clinic}.
+PASS condition: ${coach_currentPersona.name} agrees to the 60-day pilot.
+RESULT: The rep ${passed ? 'PASSED — the doctor agreed to the pilot' : 'FAILED — the doctor did not agree to the pilot'}.
 
+Score this session and return ONLY valid JSON, no markdown:
 {
   "clarity": <0-10>,
   "relevance": <0-10>,
@@ -1983,35 +2416,46 @@ Assess this pitch practice session transcript. Return ONLY valid JSON, no markdo
   "rapport": <0-10>,
   "cta_strength": <0-10>,
   "overall": <0-10>,
+  "passed": ${passed},
+  "what_won_it": "What specifically convinced the doctor (or what almost did)",
+  "what_lost_it": "What specific moment or missed opportunity lost the deal (or nearly did)",
   "strengths": ["...", "..."],
   "improvements": ["...", "...", "..."],
-  "suggested_rewrite": "One improved line or response they could have used",
-  "summary": "2-sentence overall assessment"
+  "one_thing_to_fix": "The single most important thing to change next time",
+  "suggested_rewrite": "One improved line they could have used at a key moment"
 }
 
 TRANSCRIPT:
 ${transcriptText}`;
 
   try {
-    const data = await coachCallMistral({
-      max_tokens: 1500,
-      system: 'You reply with only valid JSON, no markdown or explanation.',
-      messages: [{ role: 'user', content: prompt }]
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'YOUR_CLAUDE_API_KEY',
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
-    const raw = coachExtractReplyText(data) || '{}';
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || '{}';
     const scores = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    coachRenderScorecard(scores, transcriptText);
+    coachRenderScorecard(scores);
     coachSendWebhook(scores, transcriptText);
-    coachSetStatus('<strong>Session scored.</strong><br>See your results below.', '');
+    coachSetStatus('<strong>Session scored.</strong><br>See results below.', '');
   } catch(e) {
-    coachSetStatus('<strong>Scoring failed.</strong> Check MISTRAL_API_KEY on Vercel or local key.', '');
+    coachSetStatus('<strong>Scoring failed.</strong> Check API key.', '');
   }
 }
 
-function coachRenderScorecard(scores, transcript) {
+function coachRenderScorecard(scores) {
   const card = document.getElementById('coachScorecard');
   card.classList.add('visible');
-
   const fields = [
     { key:'clarity', label:'Clarity' },
     { key:'relevance', label:'Relevance' },
@@ -2027,107 +2471,263 @@ function coachRenderScorecard(scores, transcript) {
   }).join('');
 
   document.getElementById('coachFeedback').innerHTML = `
-    ${scores.summary ? `<p style="font-size:0.88rem;color:rgba(245,240,232,0.75);margin-bottom:16px;font-style:italic;">"${scores.summary}"</p>` : ''}
-    ${scores.strengths?.length ? `<div class="coach-feedback-block"><h4>What worked</h4><ul>${scores.strengths.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}
+    ${scores.what_won_it ? `<div class="coach-feedback-block"><h4>${scores.passed ? 'What won it' : 'What almost worked'}</h4><p style="font-size:0.88rem;color:rgba(245,240,232,0.8);line-height:1.6;">${scores.what_won_it}</p></div>` : ''}
+    ${scores.what_lost_it ? `<div class="coach-feedback-block"><h4>${scores.passed ? 'What nearly lost it' : 'What lost it'}</h4><p style="font-size:0.88rem;color:#e07060;line-height:1.6;">${scores.what_lost_it}</p></div>` : ''}
+    ${scores.strengths?.length ? `<div class="coach-feedback-block"><h4>Strengths</h4><ul>${scores.strengths.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}
     ${scores.improvements?.length ? `<div class="coach-feedback-block"><h4>To improve</h4><ul>${scores.improvements.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}
-    ${scores.suggested_rewrite ? `<div class="coach-feedback-block"><h4>Try this instead</h4><div class="coach-rewrite">"${scores.suggested_rewrite}"</div></div>` : ''}
+    ${scores.one_thing_to_fix ? `<div class="coach-feedback-block"><h4>One thing to fix next time</h4><p style="font-size:0.88rem;color:var(--gold-light);line-height:1.6;font-weight:500;">${scores.one_thing_to_fix}</p></div>` : ''}
+    ${scores.suggested_rewrite ? `<div class="coach-feedback-block"><h4>Try this line instead</h4><div class="coach-rewrite">"${scores.suggested_rewrite}"</div></div>` : ''}
   `;
   card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function coachSendWebhook(scores, transcript) {
+  const webhookUrl = document.getElementById('coachWebhook')?.value?.trim();
+  if (!webhookUrl || webhookUrl.includes('n8n')) {
+    const statusEl = document.getElementById('coachWebhookStatus');
+    if (statusEl) { statusEl.style.display = 'none'; }
+    return;
+  }
   const statusEl = document.getElementById('coachWebhookStatus');
-  const manualUrl = document.getElementById('coachWebhook').value.trim();
-  const useManual = manualUrl.length > 8 && manualUrl.startsWith('http');
-
+  if (statusEl) { statusEl.style.display = 'inline-flex'; statusEl.className = 'webhook-status sending'; statusEl.textContent = '⏳ Logging...'; }
   const payload = {
-    source: 'QuadGrowth Pitch Coach',
+    source: 'QuadGrowth Pitch Coach — Real Persona',
     timestamp: new Date().toISOString(),
-    scenario: document.getElementById('coachScenario').options[document.getElementById('coachScenario').selectedIndex].text,
-    suburb: coachGetSuburb(),
-    scores: {
-      clarity: scores.clarity,
-      relevance: scores.relevance,
-      objection_handling: scores.objection_handling,
-      rapport: scores.rapport,
-      cta_strength: scores.cta_strength,
-      overall: scores.overall
-    },
-    summary: scores.summary || '',
-    strengths: (scores.strengths || []).join(' | '),
+    persona: coach_currentPersona?.name || 'Unknown',
+    clinic: coach_currentPersona?.clinic || 'Unknown',
+    passed: scores.passed,
+    scores: { clarity: scores.clarity, relevance: scores.relevance, objection_handling: scores.objection_handling, rapport: scores.rapport, cta_strength: scores.cta_strength, overall: scores.overall },
+    what_won_it: scores.what_won_it || '',
+    what_lost_it: scores.what_lost_it || '',
+    one_thing_to_fix: scores.one_thing_to_fix || '',
     improvements: (scores.improvements || []).join(' | '),
-    suggested_rewrite: scores.suggested_rewrite || '',
     transcript_excerpt: transcript.slice(0, 1500)
   };
-
-  function showSending() {
-    statusEl.style.display = 'inline-flex';
-    statusEl.className = 'webhook-status sending';
-    statusEl.textContent = '⏳ Logging...';
-  }
-  function showSent() {
-    statusEl.className = 'webhook-status sent';
-    statusEl.textContent = '✓ Logged to Sheets + Slack';
-    statusEl.style.display = 'inline-flex';
-  }
-  function showFail() {
-    statusEl.className = 'webhook-status failed';
-    statusEl.textContent = '✗ Webhook failed';
-    statusEl.style.display = 'inline-flex';
-  }
-
-  if (coachHostedOnWeb()) {
-    try {
-      const res = await fetch('/api/log-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        showSent();
-        return;
-      }
-      if (res.status === 503 && useManual) {
-        /* fall through to direct POST below */
-      } else if (res.status === 503) {
-        return;
-      } else {
-        if (useManual) { /* fall through */ } else { showSending(); showFail(); return; }
-      }
-    } catch (e) {
-      if (!useManual) return;
-    }
-  }
-
-  if (!useManual) return;
-
-  showSending();
   try {
-    await fetch(manualUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    showSent();
-  } catch (e) {
-    showFail();
+    await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (statusEl) { statusEl.className = 'webhook-status sent'; statusEl.textContent = '✓ Logged'; }
+  } catch(e) {
+    if (statusEl) { statusEl.className = 'webhook-status failed'; statusEl.textContent = '✗ Webhook failed'; }
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', coachInitTtsVoicePreload);
+// Smart voice picker
+const COACH_VOICE_PRIORITY = [
+  'Karen','Catherine','Lee',
+  'Microsoft Libby Online (Natural)','Microsoft Sonia Online (Natural)',
+  'Microsoft Natasha Online (Natural)','Microsoft Libby','Microsoft Sonia','Microsoft Natasha',
+  'Microsoft Ryan Online (Natural)',
+  'Google Australian English','Google UK English Female','Google UK English Male',
+];
+let coach_selectedVoice = null;
+
+function coachPickVoice() {
+  const voices = coach_synth.getVoices();
+  if (!voices.length) return null;
+  for (const name of COACH_VOICE_PRIORITY) {
+    const match = voices.find(v => v.name === name);
+    if (match) return match;
+  }
+  for (const name of COACH_VOICE_PRIORITY) {
+    const match = voices.find(v => v.name.includes(name));
+    if (match) return match;
+  }
+  return voices.find(v => v.lang === 'en-AU') || voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.startsWith('en')) || voices[0];
+}
+
+function coachSpeak(text) {
+  coachStopSpeaking();
+  coach_isSpeaking = true;
+  const doSpeak = () => {
+    coach_currentUtterance = new SpeechSynthesisUtterance(text);
+    if (!coach_selectedVoice) coach_selectedVoice = coachPickVoice();
+    if (coach_selectedVoice) { coach_currentUtterance.voice = coach_selectedVoice; coach_currentUtterance.lang = coach_selectedVoice.lang; }
+    else { coach_currentUtterance.lang = 'en-AU'; }
+    coach_currentUtterance.rate = 0.92;
+    coach_currentUtterance.pitch = 1.05;
+    coach_currentUtterance.volume = 1.0;
+    coach_currentUtterance.onend = () => {
+      coach_isSpeaking = false;
+      if (coach_sessionActive) coachSetStatus('<strong>Clinic owner finished.</strong><br>Tap the mic to respond.', '');
+    };
+    coach_currentUtterance.onerror = () => { coach_isSpeaking = false; };
+    coach_synth.speak(coach_currentUtterance);
+  };
+  if (coach_synth.getVoices().length > 0) doSpeak();
+  else { coach_synth.onvoiceschanged = () => { coach_synth.onvoiceschanged = null; doSpeak(); }; }
+}
+
+function coachStopSpeaking() {
+  coach_synth.cancel();
+  coach_isSpeaking = false;
+}
+
+function coachUpdateVoiceLabel() {
+  const label = document.getElementById('coachVoiceLabel');
+  if (label && coach_selectedVoice) label.textContent = coach_selectedVoice.name + ' (' + coach_selectedVoice.lang + ')';
+  else if (label) label.textContent = 'default system voice';
+}
+
+if (coach_synth.getVoices().length === 0) {
+  coach_synth.onvoiceschanged = () => { coach_selectedVoice = coachPickVoice(); coachUpdateVoiceLabel(); coach_synth.onvoiceschanged = null; };
 } else {
-  coachInitTtsVoicePreload();
+  coach_selectedVoice = coachPickVoice(); coachUpdateVoiceLabel();
 }
+
+// ═══════════════════════════════════════════════════
+// TAB 5: PERSONA AI COACH — all vars prefixed pcoach_
+// Real personas: Dr. Dalisay Sibal, Dr. Leonida Cartas, Dr. Nenita Lalin
+// Pass condition: doctor agrees to 60-day pilot
+// ═══════════════════════════════════════════════════
+
+const PCOACH_PERSONAS = {
+  dalisay: {
+    initials: 'DS', name: 'Dr. Dalisay Sibal', clinic: 'DIS Dental Surgery',
+    opener: `"Hello? Yes, this is Dr. Dalisay. I only have a few minutes — patients waiting. You said this is about marketing for my clinic? We've been in St Albans for 33 years. We're not really looking for marketing help."`,
+    objections: [
+      { id: 'enough', label: 'Already have patients' }, { id: 'burned', label: 'Tried marketing before' },
+      { id: 'ai', label: "Don't trust AI" }, { id: 'price', label: 'Too expensive' },
+      { id: 'busy', label: 'Too busy' }, { id: 'community', label: 'Prove it works here' }
+    ],
+    system: `You are Dr. Dalisay Santos Sibal, principal dentist and founder of DIS Dental Surgery — 33 years in St Albans, Melbourne. You run 3 locations (St Albans, Truganina, Hillside/Sugar Gum Health). You speak English and Tagalog and are deeply trusted in the Filipino community. You use Gmail for reception — no CRM, no automation. Truganina location has only 4 Google reviews despite 5-star rating. You offer implants, braces/aligners, dentures. Wasted money on Google Ads before. Protective, time-poor, skeptical.
+
+PERSONALITY: Direct and busy. Short replies 2-4 sentences. Skeptical but fair. Protective of 33-year reputation.
+
+OBJECTIONS — raise naturally one at a time:
+1. "We already have enough patients — quite full most weeks actually."
+2. "We tried Google Ads — wasted thousands. How is this any different?"
+3. "I'm not comfortable with AI talking to my patients. They expect a personal touch from us."
+4. "What does this cost? If it's thousands a month, I can't justify that right now."
+5. "I have 3 clinics to run. I genuinely don't have bandwidth for another vendor."
+6. "Can you prove this works for a Filipino community clinic? Our patients aren't like mainstream ones."
+
+SAY YES TO 60-DAY PILOT ONLY if ALL of these are genuinely addressed: (1) rep mentions 3 locations + cross-referral opportunity, (2) rep specifically addresses Filipino community concern with a real strategy, (3) rep gives a clear ROI number referencing high-value services like implants or aligners, (4) rep mentions fixing the Truganina review gap. If any are missing: "I'll think about it." If they're pushy or vague, end the call: "Look, I appreciate the call but I don't think this is right for us right now."`
+  },
+  leonida: {
+    initials: 'LC', name: 'Dr. Leonida Cartas', clinic: 'BlueSpa Dental',
+    opener: `"Hi, this is Dr. Cartas from BlueSpa Dental. I received your email — curious but cautious, if I'm honest. We already work with an SEO agency. What exactly makes QuadGrowth different?"`,
+    objections: [
+      { id: 'enough', label: 'Already doing well' }, { id: 'burned', label: 'Have SEO agency' },
+      { id: 'ai', label: 'Brand tone concern' }, { id: 'price', label: 'Cost vs current spend' },
+      { id: 'busy', label: 'Day-to-day management' }, { id: 'community', label: 'Prove premium fit' }
+    ],
+    system: `You are Dr. Leonida Bravo Cartas, principal dentist at BlueSpa Dental — premium cosmetic brand, 3 locations (Melbourne CBD Collins St, Heidelberg, Taylors Hill), established since the 1980s. Fellow of the International College of Continuing Dental Education. You offer Invisalign, Zoom whitening, implants, veneers. 4.5 stars, 24 Google reviews. You already have an SEO agency. Brand-protective — the BlueSpa experience is warm, spa-like, and everything must feel premium.
+
+PERSONALITY: Polished, precise, always probing. 2-4 sentences. Professional but not cold.
+
+OBJECTIONS — raise naturally:
+1. "We're doing quite well — all 3 locations are busy, especially the CBD clinic."
+2. "We already have an SEO agency. I'm not convinced we need another vendor."
+3. "How does your AI communicate with patients? I'm very protective of the BlueSpa tone — it must feel warm, not robotic."
+4. "What are we talking about cost-wise? We have a budget but I need to see real value."
+5. "I'm in clinic most days — who manages the relationship day-to-day on your end?"
+6. "Do you have examples of premium cosmetic clinics you've worked with — not just general dental?"
+
+SAY YES TO 60-DAY PILOT ONLY if: (1) brand/tone concern addressed specifically — e.g. customised AI voice, human review, (2) cosmetic-specific strategy mentioned — Invisalign leads, whitening reactivation, (3) explains how this complements not replaces existing SEO agency, (4) gives realistic 2-4 week timeline for first metrics.`
+  },
+  nenita: {
+    initials: 'NL', name: 'Dr. Nenita Lalin', clinic: 'Western Dental Care',
+    opener: `"Oh hello! Yes, I got your message. I'm Dr. Nenita from Western Dental Care in Cairnlea. I'll be honest — we're quite a small practice. I'm not sure something like this is really for us. We mostly rely on our community and health fund patients."`,
+    objections: [
+      { id: 'enough', label: 'Small practice worry' }, { id: 'burned', label: 'Tried flyers / ads' },
+      { id: 'ai', label: 'Tech overwhelm' }, { id: 'price', label: 'Budget tight' },
+      { id: 'busy', label: 'Only 2 dentists' }, { id: 'community', label: 'Works for bulk billing?' }
+    ],
+    system: `You are Dr. Nenita Evangelista-Lalin, principal dentist at Western Dental Care in Cairnlea VIC 3023 — single location, you and Dr. Murthy only. 28 years experience, 16 at this practice since 2007. Trained at Centro Escolar University Philippines; further qualified at Australian Dental Council; special interest in orthodontics from University of Sydney. Bulk bill Child Dental Benefits (Medicare), preferred provider Bupa and HCF. Patients are families from Cairnlea, Deer Park, Caroline Springs, St Albans. Tried letterbox drops years ago — didn't work much.
+
+PERSONALITY: Warm, community-oriented, honest about being small. Slightly tech-anxious. Open if affordable and simple.
+
+OBJECTIONS — raise naturally:
+1. "We're quite small — I'm not sure we have the patient volume for something like this."
+2. "We did letterbox drops a few years ago and honestly it didn't bring many people in."
+3. "I'm not very tech-savvy and neither is my receptionist. Would this be complicated to manage?"
+4. "What does it cost? With bulk billing patients our margins aren't enormous."
+5. "It's just me and one other dentist — I genuinely can't handle a sudden rush of new patients."
+6. "Would this work for a bulk billing practice? Or is it more designed for private patients?"
+
+SAY YES TO 60-DAY PILOT if: (1) acknowledges small practice, frames pilot as low-risk and manageable, (2) addresses bulk billing question specifically — reactivating existing patients, not just new acquisition, (3) keeps it simple — no jargon, (4) ROI in plain terms e.g. "even 3 extra check-ups a week at $180 covers the cost", (5) rep shows genuine warmth. She's the most likely to say yes if the rep is warm and clear.`
+  }
+};
+
+let pcoach_persona = null, pcoach_active = false, pcoach_history = [], pcoach_transcript = [];
+let pcoach_recognition = null, pcoach_listening = false, pcoach_speaking = false;
+let pcoach_synth = window.speechSynthesis, pcoach_utterance = null;
+let pcoach_objThrown = new Set(), pcoach_pilotWon = false, pcoach_callEnded = false;
+
+function pcoachSelect(id) {
+  pcoach_persona = PCOACH_PERSONAS[id];
+  document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc-' + id).classList.add('selected');
+  document.getElementById('pcoachAvatar').textContent = pcoach_persona.initials;
+  document.getElementById('pcoachName').textContent = pcoach_persona.name;
+  document.getElementById('pcoachClinic').textContent = pcoach_persona.clinic;
+  document.getElementById('pcoachObjPills').innerHTML = pcoach_persona.objections.map(o => `<span class="ot-pill" id="potp-${o.id}">${o.label}</span>`).join('');
+  document.getElementById('personaGrid').style.display = 'none';
+  document.getElementById('pcoachSession').style.display = 'block';
+  pcoachReset();
+}
+function pcoachBackToGrid() { pcoachStopSpeaking(); if (pcoach_recognition) { try { pcoach_recognition.stop(); } catch(e){} } document.getElementById('personaGrid').style.display = 'grid'; document.getElementById('pcoachSession').style.display = 'none'; pcoach_persona = null; }
+function pcoachAppendMsg(role, text) { const chat = document.getElementById('pcoachChat'); const div = document.createElement('div'); div.className = `coach-msg ${role}`; const label = document.createElement('span'); label.className = 'coach-msg-label'; if (role === 'user') label.textContent = 'You (pitch)'; else if (role === 'ai') label.textContent = pcoach_persona ? pcoach_persona.name : 'Clinic owner'; const bubble = document.createElement('div'); bubble.className = 'coach-bubble'; bubble.textContent = text; if (label.textContent) div.appendChild(label); div.appendChild(bubble); chat.appendChild(div); chat.scrollTop = chat.scrollHeight; return bubble; }
+function pcoachSetStatus(msg, state='') { const el = document.getElementById('pcoachStatus'); el.className = `coach-status ${state}`; el.innerHTML = msg; }
+function pcoachStartSession() {
+  if (!pcoach_persona) return;
+  pcoach_active = true; pcoach_history = []; pcoach_transcript = []; pcoach_objThrown = new Set(); pcoach_pilotWon = false; pcoach_callEnded = false;
+  document.getElementById('pcoachChat').innerHTML = ''; document.getElementById('pcoachScorecard').classList.remove('visible'); document.getElementById('pcoachVerdict').style.display = 'none';
+  document.getElementById('pcoachAssessBtn').style.display = 'inline-block'; document.getElementById('pcoachEndBtn').style.display = 'inline-block'; document.getElementById('pcoachMicBtn').classList.remove('disabled');
+  const pi = document.getElementById('pcoachPassIndicator'); pi.className = 'pass-indicator live'; document.getElementById('pcoachPassLabel').textContent = 'Live — pitch to win the 60-day pilot';
+  pcoach_persona.objections.forEach(o => { const p = document.getElementById('potp-' + o.id); if (p) p.className = 'ot-pill'; });
+  const opener = pcoach_persona.opener;
+  pcoachAppendMsg('system', `Session started — ${pcoach_persona.name}, ${pcoach_persona.clinic}`);
+  pcoachAppendMsg('ai', opener); pcoach_history.push({ role: 'assistant', content: opener }); pcoach_transcript.push({ speaker: 'doctor', text: opener });
+  pcoachSpeak(opener); pcoachSetStatus(`<strong>${pcoach_persona.name.split(' ')[1]} spoke.</strong><br>Tap mic to respond with your pitch.`, '');
+}
+function pcoachReset() { pcoachStopSpeaking(); if (pcoach_recognition) { try { pcoach_recognition.stop(); } catch(e){} } pcoach_active = false; pcoach_history = []; pcoach_transcript = []; pcoach_objThrown = new Set(); pcoach_pilotWon = false; pcoach_callEnded = false; pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); document.getElementById('pcoachMicBtn').classList.add('disabled'); document.getElementById('pcoachAssessBtn').style.display = 'none'; document.getElementById('pcoachEndBtn').style.display = 'none'; document.getElementById('pcoachScorecard').classList.remove('visible'); document.getElementById('pcoachVerdict').style.display = 'none'; document.getElementById('pcoachChat').innerHTML = '<div class="coach-msg system"><div class="coach-bubble">Press Start Session — then tap the mic to deliver your pitch.</div></div>'; document.getElementById('pcoachPassIndicator').className = 'pass-indicator'; document.getElementById('pcoachPassLabel').textContent = 'Pitch to win the 60-day pilot'; pcoachSetStatus('<strong>Ready.</strong><br>Start a session, then tap the mic.', ''); }
+function pcoachEnd() { pcoachStopSpeaking(); if (pcoach_recognition) { try { pcoach_recognition.stop(); } catch(e){} } pcoach_active = false; document.getElementById('pcoachMicBtn').classList.add('disabled'); document.getElementById('pcoachMicBtn').classList.remove('recording'); pcoachSetStatus('<strong>Session ended.</strong><br>Click "Score + verdict" for your full assessment.', ''); pcoachAppendMsg('system', 'Session ended. Click "Score + verdict" to see if you passed.'); }
+function pcoachToggleMic() { if (!pcoach_active) return; if (pcoach_speaking) pcoachStopSpeaking(); if (pcoach_listening) pcoachStopListening(); else pcoachStartListening(); }
+function pcoachStartListening() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { pcoachSetStatus('Voice not supported. Use Chrome.', ''); return; } pcoach_recognition = new SR(); pcoach_recognition.lang = 'en-AU'; pcoach_recognition.continuous = false; pcoach_recognition.interimResults = false; pcoach_recognition.onstart = () => { pcoach_listening = true; document.getElementById('pcoachMicBtn').classList.add('recording'); pcoachSetStatus('<strong style="color:#e07060">🔴 Listening...</strong><br>Speak your pitch. Tap mic again to stop.', 'listening'); }; pcoach_recognition.onresult = (e) => { pcoachHandleSpeech(e.results[0][0].transcript); }; pcoach_recognition.onerror = (e) => { pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); pcoachSetStatus(`<strong>Mic error:</strong> ${e.error}. Try again.`, ''); }; pcoach_recognition.onend = () => { pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); }; pcoach_recognition.start(); }
+function pcoachStopListening() { if (pcoach_recognition) { try { pcoach_recognition.stop(); } catch(e){} } pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); }
+async function pcoachHandleSpeech(text) {
+  if (!text.trim() || !pcoach_persona) return;
+  pcoachAppendMsg('user', text); pcoach_history.push({ role: 'user', content: text }); pcoach_transcript.push({ speaker: 'rep', text });
+  pcoachSetStatus(`<strong>${pcoach_persona.name.split(' ')[1]} is thinking...</strong>`, 'speaking');
+  const thinkingBubble = pcoachAppendMsg('ai', ''); thinkingBubble.innerHTML = '<span class="speaking-indicator"><span></span><span></span><span></span></span>';
+  const thrown = Array.from(pcoach_objThrown).join(', ');
+  const fullSystem = pcoach_persona.system + '\n\nSpeak naturally on a live call. Contractions, occasional "look" or "honestly". 2-4 sentences. Australian-casual.' + (thrown ? `\n\nObjections already raised: ${thrown}. Move to new ones.` : '') + '\n\nIf rep has truly addressed ALL pass conditions, say: "Okay... you\'ve addressed my concerns. I\'m willing to give the 60-day pilot a try — but I\'ll be watching the results closely." Only say this when ALL conditions are genuinely met.';
+  try {
+    const data = await coachCallMistral({ max_tokens: 350, system: fullSystem, messages: pcoach_history });
+    const reply = coachExtractReplyText(data);
+    thinkingBubble.textContent = reply; pcoach_history.push({ role: 'assistant', content: reply }); pcoach_transcript.push({ speaker: 'doctor', text: reply });
+    pcoachDetectObj(reply);
+    const r = reply.toLowerCase();
+    if (['60-day pilot','give it a try','willing to try',"let's do it",'go ahead',"i'm in",'send me the details','sounds good','worth trying'].some(k => r.includes(k))) { pcoach_pilotWon = true; pcoachShowVerdict(true); }
+    if (['not right for us',"don't think this is",'appreciate the call but','not interested'].some(k => r.includes(k))) { pcoach_callEnded = true; pcoachShowVerdict(false); }
+    pcoachSpeak(reply); pcoachSetStatus(`<strong style="color:var(--gold-light)">🔊 ${pcoach_persona.name.split(' ')[1]} speaking...</strong><br>Wait, then tap mic.`, 'speaking');
+  } catch(e) { thinkingBubble.textContent = e.message === 'no_local_key' ? 'Add Mistral API key in localStorage (see AI Pitch Coach tab).' : (e.message || 'API error.'); pcoachSetStatus('<strong>Error.</strong> Check API key.', ''); }
+}
+function pcoachDetectObj(reply) { const r = reply.toLowerCase(); const map = { enough: ['already have','quite full','busy enough'], burned: ['tried','wasted','google ads','letterbox'], ai: ['ai','artificial','robotic','impersonal','personal touch','brand','tone'], price: ['cost','price','expensive','afford','budget','margin'], busy: ['busy','time','manage','just me','just two'], community: ['community','filipino','bulk bill','our patients','mainstream','premium','cosmetic'] }; for (const [key, kws] of Object.entries(map)) { if (kws.some(k => r.includes(k))) { pcoach_objThrown.add(key); const pill = document.getElementById('potp-' + key); if (pill && !pill.classList.contains('handled')) pill.className = 'ot-pill thrown'; } } }
+function pcoachShowVerdict(passed) { pcoach_active = false; document.getElementById('pcoachMicBtn').classList.add('disabled'); const pi = document.getElementById('pcoachPassIndicator'); pi.className = 'pass-indicator ' + (passed ? 'passed' : 'failed'); document.getElementById('pcoachPassLabel').textContent = passed ? '✓ PASSED — Pilot secured!' : '✗ FAILED — Call ended'; const banner = document.getElementById('pcoachVerdict'); banner.style.display = 'block'; banner.className = 'verdict-banner ' + (passed ? 'pass' : 'fail'); banner.innerHTML = passed ? `<div class="verdict-title">🎉 Pilot Secured!</div><div class="verdict-sub">${pcoach_persona.name} agreed to the 60-day pilot.<br>Click "Score + verdict" to see your full breakdown.</div>` : `<div class="verdict-title">📵 Call Ended</div><div class="verdict-sub">${pcoach_persona.name} wasn't convinced.<br>Click "Score + verdict" to find out exactly what went wrong.</div>`; banner.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+function pcoachSpeak(text) { pcoachStopSpeaking(); pcoach_speaking = true; const doSpeak = () => { pcoach_utterance = new SpeechSynthesisUtterance(String(text || '').trim()); const v = coachPickBestVoice(pcoach_synth.getVoices()); if (v) { pcoach_utterance.voice = v; pcoach_utterance.lang = v.lang || 'en-AU'; document.getElementById('pcoachVoiceLabel').textContent = 'Voice: ' + v.name; } else { pcoach_utterance.lang = 'en-AU'; } pcoach_utterance.rate = 0.93; pcoach_utterance.pitch = 1.05; pcoach_utterance.onend = () => { pcoach_speaking = false; if (pcoach_active) pcoachSetStatus('<strong>Finished speaking.</strong><br>Tap the mic to respond.', ''); }; pcoach_utterance.onerror = () => { pcoach_speaking = false; }; pcoach_synth.speak(pcoach_utterance); }; if (pcoach_synth.getVoices().length > 0) doSpeak(); else { pcoach_synth.onvoiceschanged = () => { pcoach_synth.onvoiceschanged = null; doSpeak(); }; } }
+function pcoachStopSpeaking() { pcoach_synth.cancel(); pcoach_speaking = false; }
+async function pcoachAssess() {
+  if (pcoach_transcript.length < 2) { alert('Have at least one exchange before scoring.'); return; }
+  pcoachSetStatus('<strong>Analysing your session...</strong>', 'speaking');
+  const transcriptText = pcoach_transcript.map(t => `${t.speaker === 'rep' ? 'REP' : pcoach_persona.name.toUpperCase()}: ${t.text}`).join('\n');
+  const passed = pcoach_pilotWon;
+  const prompt = `You are a senior sales coach for QuadGrowth.\n\nThe rep pitched to ${pcoach_persona.name} from ${pcoach_persona.clinic}.\nPASS condition: Doctor agrees to the 60-day pilot.\nRESULT: The rep ${passed ? 'PASSED — doctor agreed to pilot' : 'FAILED — doctor did not agree'}.\n\nReturn ONLY valid JSON:\n{"clarity":<0-10>,"relevance":<0-10>,"objection_handling":<0-10>,"rapport":<0-10>,"cta_strength":<0-10>,"overall":<0-10>,"passed":${passed},"what_won_it":"What specifically convinced or almost convinced the doctor","what_lost_it":"What specific moment or gap lost the deal","strengths":["..."],"improvements":["..."],"one_thing_to_fix":"Single most important change for next time","suggested_rewrite":"One improved line they could have used"}\n\nTRANSCRIPT:\n${transcriptText}`;
+  try {
+    const data = await coachCallMistral({ max_tokens: 1200, system: 'Reply with only valid JSON, no markdown.', messages: [{ role: 'user', content: prompt }] });
+    const raw = coachExtractReplyText(data) || '{}';
+    const scores = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    pcoachRenderScorecard(scores); pcoachSendWebhook(scores, transcriptText); pcoachSetStatus('<strong>Session scored.</strong><br>See results below.', '');
+  } catch(e) { pcoachSetStatus('<strong>Scoring failed.</strong> Check API key.', ''); }
+}
+function pcoachRenderScorecard(scores) { const card = document.getElementById('pcoachScorecard'); card.classList.add('visible'); const fields = [{key:'clarity',label:'Clarity'},{key:'relevance',label:'Relevance'},{key:'objection_handling',label:'Objections'},{key:'rapport',label:'Rapport'},{key:'cta_strength',label:'CTA'},{key:'overall',label:'Overall'}]; document.getElementById('pcoachScorePills').innerHTML = fields.map(f => { const v = scores[f.key] || 0; const cls = v >= 8 ? 'good' : v >= 6 ? 'mid' : 'low'; return `<div class="score-pill"><span class="score-pill-label">${f.label}</span><span class="score-pill-val ${cls}">${v}/10</span></div>`; }).join(''); document.getElementById('pcoachFeedback').innerHTML = `${scores.what_won_it ? `<div class="coach-feedback-block"><h4>${scores.passed ? 'What won it' : 'What almost worked'}</h4><p style="font-size:0.88rem;color:rgba(245,240,232,0.8);line-height:1.6;">${scores.what_won_it}</p></div>` : ''}${scores.what_lost_it ? `<div class="coach-feedback-block"><h4>${scores.passed ? 'What nearly lost it' : 'What lost it'}</h4><p style="font-size:0.88rem;color:#e07060;line-height:1.6;">${scores.what_lost_it}</p></div>` : ''}${scores.strengths?.length ? `<div class="coach-feedback-block"><h4>Strengths</h4><ul>${scores.strengths.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}${scores.improvements?.length ? `<div class="coach-feedback-block"><h4>To improve</h4><ul>${scores.improvements.map(s=>`<li>${s}</li>`).join('')}</ul></div>` : ''}${scores.one_thing_to_fix ? `<div class="coach-feedback-block"><h4>One thing to fix next time</h4><p style="font-size:0.88rem;color:var(--gold-light);line-height:1.6;font-weight:500;">${scores.one_thing_to_fix}</p></div>` : ''}${scores.suggested_rewrite ? `<div class="coach-feedback-block"><h4>Try this line instead</h4><div class="coach-rewrite">"${scores.suggested_rewrite}"</div></div>` : ''}`; card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+async function pcoachSendWebhook(scores, transcript) { const webhookUrl = document.getElementById('pcoachWebhook')?.value?.trim(); if (!webhookUrl || webhookUrl.length < 10 || !webhookUrl.startsWith('http')) return; const statusEl = document.getElementById('pcoachWebhookStatus'); if (statusEl) { statusEl.style.display = 'inline-flex'; statusEl.className = 'webhook-status sending'; statusEl.textContent = '⏳ Logging...'; } const payload = { source: 'QuadGrowth Persona AI Coach', timestamp: new Date().toISOString(), persona: pcoach_persona?.name, clinic: pcoach_persona?.clinic, passed: scores.passed, scores: { clarity: scores.clarity, relevance: scores.relevance, objection_handling: scores.objection_handling, rapport: scores.rapport, cta_strength: scores.cta_strength, overall: scores.overall }, what_won_it: scores.what_won_it || '', what_lost_it: scores.what_lost_it || '', one_thing_to_fix: scores.one_thing_to_fix || '', improvements: (scores.improvements || []).join(' | '), transcript_excerpt: transcript.slice(0, 1500) }; try { await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (statusEl) { statusEl.className = 'webhook-status sent'; statusEl.textContent = '✓ Logged'; } } catch(e) { if (statusEl) { statusEl.className = 'webhook-status failed'; statusEl.textContent = '✗ Webhook failed'; } } }
+
 </script>
-
 <style>
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; pointer-events: none; }
-}
+@keyframes fadeOut { from{opacity:1} to{opacity:0;pointer-events:none} }
 </style>
-
-</div> <!-- end #appContent -->
+</div>
 </body>
 </html>
