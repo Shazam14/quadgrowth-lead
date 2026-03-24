@@ -2689,6 +2689,18 @@ function pcoachEnd() { pcoachStopSpeaking(); if (pcoach_recognition) { try { pco
 function pcoachToggleMic() { if (!pcoach_active) return; if (pcoach_speaking) pcoachStopSpeaking(); if (pcoach_listening) pcoachStopListening(); else pcoachStartListening(); }
 function pcoachStartListening() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { pcoachSetStatus('Voice not supported. Use Chrome.', ''); return; } pcoach_recognition = new SR(); pcoach_recognition.lang = 'en-AU'; pcoach_recognition.continuous = false; pcoach_recognition.interimResults = false; pcoach_recognition.onstart = () => { pcoach_listening = true; document.getElementById('pcoachMicBtn').classList.add('recording'); pcoachSetStatus('<strong style="color:#e07060">🔴 Listening...</strong><br>Speak your pitch. Tap mic again to stop.', 'listening'); }; pcoach_recognition.onresult = (e) => { pcoachHandleSpeech(e.results[0][0].transcript); }; pcoach_recognition.onerror = (e) => { pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); pcoachSetStatus(`<strong>Mic error:</strong> ${e.error}. Try again.`, ''); }; pcoach_recognition.onend = () => { pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); }; pcoach_recognition.start(); }
 function pcoachStopListening() { if (pcoach_recognition) { try { pcoach_recognition.stop(); } catch(e){} } pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); }
+function coachPickBestVoice(voices) {
+  if (!voices || !voices.length) return null;
+  for (const name of COACH_VOICE_PRIORITY) {
+    const match = voices.find(v => v.name === name);
+    if (match) return match;
+  }
+  for (const name of COACH_VOICE_PRIORITY) {
+    const match = voices.find(v => v.name.includes(name));
+    if (match) return match;
+  }
+  return voices.find(v => v.lang === 'en-AU') || voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.startsWith('en')) || voices[0];
+}
 async function coachCallMistral({ max_tokens, system, messages }) {
   const res = await fetch('/api/coach', {
     method: 'POST',
