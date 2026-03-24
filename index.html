@@ -2689,6 +2689,21 @@ function pcoachEnd() { pcoachStopSpeaking(); if (pcoach_recognition) { try { pco
 function pcoachToggleMic() { if (!pcoach_active) return; if (pcoach_speaking) pcoachStopSpeaking(); if (pcoach_listening) pcoachStopListening(); else pcoachStartListening(); }
 function pcoachStartListening() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { pcoachSetStatus('Voice not supported. Use Chrome.', ''); return; } pcoach_recognition = new SR(); pcoach_recognition.lang = 'en-AU'; pcoach_recognition.continuous = false; pcoach_recognition.interimResults = false; pcoach_recognition.onstart = () => { pcoach_listening = true; document.getElementById('pcoachMicBtn').classList.add('recording'); pcoachSetStatus('<strong style="color:#e07060">🔴 Listening...</strong><br>Speak your pitch. Tap mic again to stop.', 'listening'); }; pcoach_recognition.onresult = (e) => { pcoachHandleSpeech(e.results[0][0].transcript); }; pcoach_recognition.onerror = (e) => { pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); pcoachSetStatus(`<strong>Mic error:</strong> ${e.error}. Try again.`, ''); }; pcoach_recognition.onend = () => { pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); }; pcoach_recognition.start(); }
 function pcoachStopListening() { if (pcoach_recognition) { try { pcoach_recognition.stop(); } catch(e){} } pcoach_listening = false; document.getElementById('pcoachMicBtn').classList.remove('recording'); }
+async function coachCallMistral({ max_tokens, system, messages }) {
+  const res = await fetch('/api/coach', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ max_tokens, system, messages })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'API error ' + res.status);
+  }
+  return res.json();
+}
+function coachExtractReplyText(data) {
+  return data?.content?.[0]?.text || '';
+}
 async function pcoachHandleSpeech(text) {
   if (!text.trim() || !pcoach_persona) return;
   pcoachAppendMsg('user', text); pcoach_history.push({ role: 'user', content: text }); pcoach_transcript.push({ speaker: 'rep', text });
