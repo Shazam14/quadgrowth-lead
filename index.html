@@ -2651,7 +2651,10 @@ SAY YES TO 60-DAY PILOT if: (1) acknowledges small practice, frames pilot as low
 
 let pcoach_persona = null, pcoach_active = false, pcoach_history = [], pcoach_transcript = [];
 let pcoach_recognition = null, pcoach_listening = false, pcoach_speaking = false;
-let pcoach_synth = window.speechSynthesis, pcoach_utterance = null;
+// Share the SAME synth reference as Tab 4 — two .cancel() calls on separate
+// references to window.speechSynthesis wipe each other's audio queue
+const pcoach_synth = coach_synth;
+let pcoach_utterance = null;
 let pcoach_objThrown = new Set(), pcoach_pilotWon = false, pcoach_callEnded = false;
 
 function pcoachSelect(id) {
@@ -2706,8 +2709,53 @@ async function pcoachHandleSpeech(text) {
 }
 function pcoachDetectObj(reply) { const r = reply.toLowerCase(); const map = { enough: ['already have','quite full','busy enough'], burned: ['tried','wasted','google ads','letterbox'], ai: ['ai','artificial','robotic','impersonal','personal touch','brand','tone'], price: ['cost','price','expensive','afford','budget','margin'], busy: ['busy','time','manage','just me','just two'], community: ['community','filipino','bulk bill','our patients','mainstream','premium','cosmetic'] }; for (const [key, kws] of Object.entries(map)) { if (kws.some(k => r.includes(k))) { pcoach_objThrown.add(key); const pill = document.getElementById('potp-' + key); if (pill && !pill.classList.contains('handled')) pill.className = 'ot-pill thrown'; } } }
 function pcoachShowVerdict(passed) { pcoach_active = false; document.getElementById('pcoachMicBtn').classList.add('disabled'); const pi = document.getElementById('pcoachPassIndicator'); pi.className = 'pass-indicator ' + (passed ? 'passed' : 'failed'); document.getElementById('pcoachPassLabel').textContent = passed ? '✓ PASSED — Pilot secured!' : '✗ FAILED — Call ended'; const banner = document.getElementById('pcoachVerdict'); banner.style.display = 'block'; banner.className = 'verdict-banner ' + (passed ? 'pass' : 'fail'); banner.innerHTML = passed ? `<div class="verdict-title">🎉 Pilot Secured!</div><div class="verdict-sub">${pcoach_persona.name} agreed to the 60-day pilot.<br>Click "Score + verdict" to see your full breakdown.</div>` : `<div class="verdict-title">📵 Call Ended</div><div class="verdict-sub">${pcoach_persona.name} wasn't convinced.<br>Click "Score + verdict" to find out exactly what went wrong.</div>`; banner.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-function pcoachSpeak(text) { pcoachStopSpeaking(); pcoach_speaking = true; const doSpeak = () => { pcoach_utterance = new SpeechSynthesisUtterance(String(text || '').trim()); const v = coachPickBestVoice(pcoach_synth.getVoices()); if (v) { pcoach_utterance.voice = v; pcoach_utterance.lang = v.lang || 'en-AU'; document.getElementById('pcoachVoiceLabel').textContent = 'Voice: ' + v.name; } else { pcoach_utterance.lang = 'en-AU'; } pcoach_utterance.rate = 0.93; pcoach_utterance.pitch = 1.05; pcoach_utterance.onend = () => { pcoach_speaking = false; if (pcoach_active) pcoachSetStatus('<strong>Finished speaking.</strong><br>Tap the mic to respond.', ''); }; pcoach_utterance.onerror = () => { pcoach_speaking = false; }; pcoach_synth.speak(pcoach_utterance); }; if (pcoach_synth.getVoices().length > 0) doSpeak(); else { pcoach_synth.onvoiceschanged = () => { pcoach_synth.onvoiceschanged = null; doSpeak(); }; } }
-function pcoachStopSpeaking() { pcoach_synth.cancel(); pcoach_speaking = false; }
+function pcoachSpeak(text) {
+  // Cancel any current speech (both tabs share the same engine)
+  pcoach_synth.cancel();
+  pcoach_speaking = true;
+  const t = String(text || '').trim();
+  if (!t) { pcoach_speaking = false; return; }
+  const doSpeak = () => {
+    pcoach_utterance = new SpeechSynthesisUtterance(t);
+    const v = coachPickBestVoice(pcoach_synth.getVoices());
+    if (v) {
+      pcoach_utterance.voice = v;
+      pcoach_utterance.lang = v.lang || 'en-AU';
+      const lbl = document.getElementById('pcoachVoiceLabel');
+      if (lbl) lbl.textContent = 'Voice: ' + v.name;
+    } else {
+      pcoach_utterance.lang = 'en-AU';
+    }
+    pcoach_utterance.rate = 0.93;
+    pcoach_utterance.pitch = 1.05;
+    pcoach_utterance.onend = () => {
+      pcoach_speaking = false;
+      if (pcoach_active) pcoachSetStatus('<strong>Finished speaking.</strong><br>Tap the mic to respond.', '');
+    };
+    pcoach_utterance.onerror = (e) => {
+      pcoach_speaking = false;
+      // 'interrupted' is expected when we cancel mid-speech — not a real error
+      if (e.error !== 'interrupted') console.warn('pcoach speech error:', e.error);
+    };
+    pcoach_synth.speak(pcoach_utterance);
+  };
+  const voices = pcoach_synth.getVoices();
+  if (voices.length > 0) {
+    doSpeak();
+  } else {
+    // Voices not loaded yet — wait for them
+    const onReady = () => { pcoach_synth.onvoiceschanged = null; doSpeak(); };
+    pcoach_synth.onvoiceschanged = onReady;
+    // Fallback: if onvoiceschanged never fires (some browsers), try after 800ms
+    setTimeout(() => { if (pcoach_speaking && !pcoach_utterance) { pcoach_synth.onvoiceschanged = null; doSpeak(); } }, 800);
+  }
+}
+function pcoachStopSpeaking() {
+  // Only cancel the shared synth if pcoach itself is speaking
+  if (pcoach_speaking) { pcoach_synth.cancel(); }
+  pcoach_speaking = false;
+  pcoach_utterance = null;
+}
 async function pcoachAssess() {
   if (pcoach_transcript.length < 2) { alert('Have at least one exchange before scoring.'); return; }
   pcoachSetStatus('<strong>Analysing your session...</strong>', 'speaking');
