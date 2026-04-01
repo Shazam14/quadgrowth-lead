@@ -88,9 +88,9 @@
   /* ── MAIN ── */
   main { padding: 40px 48px; max-width: 1000px; margin: 0 auto; }
 
-  /* Wider Brand Kit tab uses full-bleed section; clip to avoid 100vw scrollbar */
+  /* Brand Kit: wider column only — do NOT use full-bleed + clip (clips the iframe) */
   main:has(#branding.active) {
-    overflow-x: clip;
+    max-width: 1240px;
   }
 
   .section { display: none; animation: fadeIn 0.35s ease; }
@@ -115,17 +115,7 @@
     font-weight: 300;
   }
 
-  /* Brand kit tab — wide canvas + framed iframe */
-  #branding.section {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-    padding-left: clamp(16px, 4vw, 48px);
-    padding-right: clamp(16px, 4vw, 48px);
-    box-sizing: border-box;
-  }
-
+  /* Brand kit tab — framed iframe (stays inside main; no negative margins) */
   .brand-kit-intro {
     max-width: 720px;
     margin-bottom: 28px;
