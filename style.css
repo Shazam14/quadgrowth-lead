@@ -88,6 +88,11 @@
   /* ── MAIN ── */
   main { padding: 40px 48px; max-width: 1000px; margin: 0 auto; }
 
+  /* Wider Brand Kit tab uses full-bleed section; clip to avoid 100vw scrollbar */
+  main:has(#branding.active) {
+    overflow-x: clip;
+  }
+
   .section { display: none; animation: fadeIn 0.35s ease; }
   .section.active { display: block; }
 
@@ -108,6 +113,54 @@
     color: var(--muted);
     margin-bottom: 36px;
     font-weight: 300;
+  }
+
+  /* Brand kit tab — wide canvas + framed iframe */
+  #branding.section {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: clamp(16px, 4vw, 48px);
+    padding-right: clamp(16px, 4vw, 48px);
+    box-sizing: border-box;
+  }
+
+  .brand-kit-intro {
+    max-width: 720px;
+    margin-bottom: 28px;
+  }
+
+  #branding .section-sub {
+    margin-bottom: 0;
+  }
+
+  .brand-kit-chrome {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 2px;
+    border-radius: 18px;
+    background: linear-gradient(
+      145deg,
+      rgba(232, 185, 106, 0.55) 0%,
+      rgba(200, 150, 62, 0.22) 28%,
+      rgba(27, 42, 74, 0.5) 55%,
+      rgba(200, 150, 62, 0.18) 100%
+    );
+    box-shadow:
+      0 28px 56px rgba(0, 0, 0, 0.38),
+      0 0 0 1px rgba(200, 150, 62, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .brand-kit-frame {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 188px);
+    min-height: 560px;
+    border: none;
+    border-radius: 16px;
+    background: #111d33;
   }
 
   /* ── CATEGORY FILTER ── */
@@ -1036,6 +1089,12 @@
     main { padding: 28px 20px; }
     .tab { padding: 10px 16px; font-size: 0.82rem; }
     .card-face { padding: 28px 24px; }
+    .brand-kit-frame {
+      height: calc(100vh - 220px);
+      min-height: 420px;
+      border-radius: 14px;
+    }
+    .brand-kit-chrome { border-radius: 15px; }
   }
 
   /* ── AUTH GATE ── */
