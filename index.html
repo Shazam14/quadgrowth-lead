@@ -44,6 +44,7 @@
     <button class="tab" onclick="switchTab('coach')">🎙️ AI Pitch Coach</button>
     <button class="tab" onclick="switchTab('persona')">🎭 Persona AI Coach</button>
     <button class="tab" onclick="switchTab('branding')">🎨 Brand Kit</button>
+    <button class="tab" onclick="switchTab('bible')">🔐 The Vault</button>
   </div>
 </header>
 
@@ -134,128 +135,75 @@
   </section>
 
   <!-- ═══════════════════════════════════════ -->
-  <!-- TAB 4: AI PITCH COACH — REAL PERSONAS  -->
+  <!-- TAB 4: AI PITCH COACH                  -->
   <!-- ═══════════════════════════════════════ -->
   <section id="coach" class="section">
-    <div class="section-title">Real Client Pitch Coach</div>
-    <div class="section-sub">Practice on exact replicas of real Melbourne dental clinic owners. Pass = they agree to the 60-day pilot.</div>
+    <div class="section-title">AI Pitch Coach</div>
+    <div class="section-sub">Full voice roleplay with an AI clinic owner (Mistral). Your browser reads their lines aloud — practice live, get scored and logged.</div>
 
-    <!-- Persona Selector Cards -->
-    <div class="persona-grid" id="personaGrid">
-
-      <div class="persona-card" id="pc-dalisay" onclick="coachSelectPersona('dalisay')">
-        <div class="persona-difficulty hard">HARDEST</div>
-        <div class="persona-avatar">DS</div>
-        <div class="persona-name">Dr. Dalisay Sibal</div>
-        <div class="persona-clinic">DIS Dental Surgery</div>
-        <div class="persona-meta">St Albans · Truganina · Hillside · 33 yrs</div>
-        <div class="persona-tags">
-          <span class="ptag">Multi-location</span>
-          <span class="ptag">Filipino community</span>
-          <span class="ptag">Low digital presence</span>
-        </div>
-        <div class="persona-hint">Direct, protective, been burned before. Needs hard ROI proof.</div>
+    <!-- Config Row -->
+    <div class="coach-config">
+      <div class="coach-field">
+        <label>Scenario</label>
+        <select id="coachScenario">
+          <option value="cold-email">Cold email reply — curious but skeptical</option>
+          <option value="discovery">Discovery call — first real conversation</option>
+          <option value="objection">Objection — "too expensive / tried before"</option>
+          <option value="hot">Hot lead — already interested, needs convincing</option>
+        </select>
       </div>
-
-      <div class="persona-card" id="pc-leonida" onclick="coachSelectPersona('leonida')">
-        <div class="persona-difficulty medium">MEDIUM</div>
-        <div class="persona-avatar">LC</div>
-        <div class="persona-name">Dr. Leonida Cartas</div>
-        <div class="persona-clinic">BlueSpa Dental</div>
-        <div class="persona-meta">CBD · Heidelberg · Taylors Hill · Est. 1980s</div>
-        <div class="persona-tags">
-          <span class="ptag">Cosmetic-focused</span>
-          <span class="ptag">Premium brand</span>
-          <span class="ptag">Tech-forward</span>
-        </div>
-        <div class="persona-hint">Polished, quality-conscious. Worried about brand fit.</div>
+      <div class="coach-field">
+        <label>Suburb / Context</label>
+        <select id="coachSuburb">
+          <option value="Richmond">Richmond</option>
+          <option value="Fitzroy">Fitzroy</option>
+          <option value="Southbank">Southbank</option>
+          <option value="Toorak">Toorak</option>
+          <option value="St Kilda">St Kilda</option>
+          <option value="Melbourne CBD">Melbourne CBD</option>
+          <option value="Geelong">Geelong</option>
+        </select>
       </div>
-
-      <div class="persona-card" id="pc-nenita" onclick="coachSelectPersona('nenita')">
-        <div class="persona-difficulty easy">EASIER</div>
-        <div class="persona-avatar">NL</div>
-        <div class="persona-name">Dr. Nenita Lalin</div>
-        <div class="persona-clinic">Western Dental Care</div>
-        <div class="persona-meta">Cairnlea · Single location · 28 yrs · Bulk billing</div>
-        <div class="persona-tags">
-          <span class="ptag">Volume-focused</span>
-          <span class="ptag">Budget-conscious</span>
-          <span class="ptag">Community-rooted</span>
-        </div>
-        <div class="persona-hint">Warm but price-sensitive. Needs simplicity + speed.</div>
+      <div class="coach-field full">
+        <label>Optional webhook override (local file only — on Vercel use <code style="font-size:0.75rem">N8N_COACH_WEBHOOK_URL</code> env)</label>
+        <input type="text" id="coachWebhook" placeholder="Leave empty on live site; paste URL here only when testing from disk" />
       </div>
-
     </div>
 
-    <!-- Active Session (hidden until persona selected) -->
-    <div id="coachSession" style="display:none;">
-
-      <!-- Active Persona Banner -->
-      <div class="active-persona-bar" id="activePersonaBar">
-        <div class="apb-left">
-          <div class="apb-avatar" id="apbAvatar"></div>
-          <div>
-            <div class="apb-name" id="apbName"></div>
-            <div class="apb-clinic" id="apbClinic"></div>
-          </div>
-        </div>
-        <div class="apb-right">
-          <div class="pass-indicator" id="passIndicator">
-            <span class="pass-dot"></span>
-            <span id="passLabel">Pitch to win the 60-day pilot</span>
-          </div>
-          <button class="coach-btn" onclick="coachBackToPersonas()" style="font-size:0.78rem;padding:6px 14px;">↩ Change</button>
-        </div>
+    <!-- Chat Window -->
+    <div class="coach-chat" id="coachChat">
+      <div class="coach-msg system">
+        <div class="coach-bubble">Press Start Session to begin. The AI will play the clinic owner — you pitch out loud.</div>
       </div>
+    </div>
 
-      <!-- Objection Progress -->
-      <div class="objection-tracker" id="objectionTracker">
-        <div class="ot-label">Objections thrown:</div>
-        <div class="ot-pills" id="otPills"></div>
+    <!-- Voice Controls -->
+    <div class="coach-controls">
+      <div class="coach-mic-wrap">
+        <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()" title="Tap to speak">🎙️</button>
+        <div class="coach-voice-label" id="coachVoiceLabel">Clinic owner voice: …</div>
       </div>
-
-      <!-- n8n webhook -->
-      <div style="margin-bottom:16px;">
-        <input type="text" id="coachWebhook" placeholder="n8n webhook URL (optional — for Sheets + Slack logging)" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(245,240,232,0.12);border-radius:10px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.82rem;padding:9px 14px;outline:none;" />
+      <div class="coach-status" id="coachStatus">
+        <strong>Ready when you are.</strong><br>Start a session, then tap the mic to speak your pitch.
       </div>
+    </div>
 
-      <!-- Chat -->
-      <div class="coach-chat" id="coachChat">
-        <div class="coach-msg system"><div class="coach-bubble">Press Start Session — then tap the mic to deliver your pitch.</div></div>
+    <!-- Action Buttons -->
+    <div class="coach-action-row">
+      <button class="coach-btn primary" onclick="coachStartSession()">▶ Start Session</button>
+      <button class="coach-btn" onclick="coachAssessSession()" id="coachAssessBtn" style="display:none">📊 Score this session</button>
+      <button class="coach-btn danger" onclick="coachEndSession()" id="coachEndBtn" style="display:none">■ End Session</button>
+      <button class="coach-btn" onclick="coachReset()">↺ Reset</button>
+    </div>
+
+    <!-- Scorecard -->
+    <div class="coach-scorecard" id="coachScorecard">
+      <div class="coach-scorecard-title">
+        Session scorecard
+        <span class="webhook-status" id="coachWebhookStatus" style="display:none"></span>
       </div>
-
-      <!-- Voice -->
-      <div class="coach-controls">
-        <button class="coach-mic-btn disabled" id="coachMicBtn" onclick="coachToggleMic()">🎙️</button>
-        <div class="coach-status" id="coachStatus">
-          <strong>Ready.</strong><br>Start a session, then tap the mic.
-        </div>
-      </div>
-      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:6px;">
-        <span>🔊 Voice:</span><span id="coachVoiceLabel" style="color:var(--gold-light);">detecting...</span>
-      </div>
-
-      <!-- Actions -->
-      <div class="coach-action-row">
-        <button class="coach-btn primary" onclick="coachStartSession()">▶ Start Session</button>
-        <button class="coach-btn" onclick="coachAssessSession()" id="coachAssessBtn" style="display:none;">📊 Score + verdict</button>
-        <button class="coach-btn danger" onclick="coachEndSession()" id="coachEndBtn" style="display:none;">■ End Session</button>
-        <button class="coach-btn" onclick="coachReset()">↺ Reset</button>
-      </div>
-
-      <!-- Pass/Fail Banner -->
-      <div class="verdict-banner" id="verdictBanner" style="display:none;"></div>
-
-      <!-- Scorecard -->
-      <div class="coach-scorecard" id="coachScorecard">
-        <div class="coach-scorecard-title">
-          Session scorecard
-          <span class="webhook-status" id="coachWebhookStatus" style="display:none;"></span>
-        </div>
-        <div class="score-pills" id="coachScorePills"></div>
-        <div id="coachFeedback"></div>
-      </div>
-
+      <div class="score-pills" id="coachScorePills"></div>
+      <div id="coachFeedback"></div>
     </div>
   </section>
 
@@ -346,6 +294,44 @@
     <div class="brand-kit-chrome">
       <iframe class="brand-kit-frame" src="branding.html" title="QuadGrowth Brand Kit"></iframe>
     </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB 7: COMPANY BIBLE                   -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="bible" class="section">
+    <div class="section-title">The Vault</div>
+    <div class="section-sub">Source of truth for credentials, tools, and team access. Treat this as confidential — do not share externally.</div>
+
+    <!-- Phase 1 Banner -->
+    <div class="bible-phase-banner">
+      <div class="bible-phase-title">⚠️ Phase 1 — Small Team Protocol (≤5 people)</div>
+      <div class="bible-phase-body">Credentials are stored here for operational simplicity while the team is small. As we grow, we will migrate to a dedicated password manager (1Password / Bitwarden) with role-based vaults, enforced 90-day rotation, and MFA on all accounts. This document will then become a reference index only — not the vault itself.</div>
+    </div>
+
+    <!-- Credential Cards -->
+    <div class="bible-block-title">Credentials</div>
+    <div class="filters" id="bibleFilters">
+      <button class="filter-btn active" onclick="filterBible('all', this)">All</button>
+      <button class="filter-btn" onclick="filterBible('advertising', this)">📢 Advertising</button>
+      <button class="filter-btn" onclick="filterBible('project', this)">🗂 Project Mgmt</button>
+      <button class="filter-btn" onclick="filterBible('comms', this)">💬 Comms</button>
+      <button class="filter-btn" onclick="filterBible('infra', this)">⚙️ Infrastructure</button>
+      <button class="filter-btn" onclick="filterBible('client', this)">🦷 Client Tools</button>
+      <button class="filter-btn" onclick="filterBible('finance', this)">💳 Finance</button>
+    </div>
+    <div class="bible-cards" id="bibleCards"></div>
+
+    <!-- Access Matrix -->
+    <div class="bible-block-title" style="margin-top:40px;">Team Access Matrix</div>
+    <div class="bible-table-wrap">
+      <table class="bible-table" id="bibleAccessTable"></table>
+    </div>
+
+    <!-- Security Rules -->
+    <div class="bible-block-title" style="margin-top:40px;">Security Rules</div>
+    <div class="bible-rules" id="bibleRules"></div>
   </section>
 
 </main>
