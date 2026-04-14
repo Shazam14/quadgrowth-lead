@@ -254,9 +254,11 @@ let activeFilter = 'all';
 
 function switchTab(tab) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active');
+    if (t.getAttribute('onclick') === `switchTab('${tab}')`) t.classList.add('active');
+  });
   document.getElementById(tab).classList.add('active');
-  event.target.classList.add('active');
 }
 
 // ═══════════════════════════════════════════════════
